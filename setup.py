@@ -14,7 +14,7 @@ setup(name='pyledger',
       author_email='guillemborrell@gmail.com',
       packages=['pyledger'],
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 1 - Planning',
           'Environment :: Console',
           'Intended Audience :: Developers',
           'Programming Language :: Python',
@@ -24,5 +24,8 @@ setup(name='pyledger',
           'License :: OSI Approved :: GNU Affero General Public License v3'
       ],
       setup_requires=['pytest-runner'],
-      install_requires=['protobuf>=3.0.0', 'requests', 'tornado']
+      install_requires=['protobuf>=3.0.0', 'requests', 'tornado'],
+      entry_points={
+          'console_scripts': ['pyledger-server=pyledger.server:main']
+          }
       )
