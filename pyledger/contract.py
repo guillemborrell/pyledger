@@ -1,9 +1,20 @@
-from collections import namedtuple
+from sqlalchemy import desc
 from uuid import uuid4
 from pyledger.db import DB, Contract, Status
 from datetime import datetime
 import inspect
 import dill
+
+
+class Props():
+    def __init__(self, **kwargs):
+        self.__dict__.update(**kwargs)
+
+    def get_attributes(self):
+        return self.__dict__
+
+    def __repr__(self):
+        return str(self.__dict__)
 
 
 class Builder():
@@ -24,11 +35,17 @@ class Builder():
     def add_description(self, description: str):
         self.description = description
 
-    def add_attribute(self, name: str, value):
+    def add_property(self, name: str, value):
         """
         Add attribute *name* to the contract with an initial value of *value*
         """
         self.attributes[name] = value
+
+    def get_property(self, name:str):
+        """
+        Get contract property.
+        """
+        return self.attributes
 
     def add_method(self, method, name: str=''):
         """
@@ -58,25 +75,25 @@ class Builder():
         Call the function of the smart contract passing the keyword arguments.
         """
         # Build named tuple with the properies
-        Props = namedtuple('Props', self.attributes.keys())
         props = Props(**self.attributes)
         
         signature = inspect.signature(self.methods[function])
         call_args = {'props': props}
 
+        if function not in self.methods:
+            return 'Function not found'
+        
         for k,v in kwargs.items():
+            print(signature.parameters)
             if k in signature.parameters:
-                if type(v) == signature.parameters[k].annotation:
-                    call_args[k] = v
-                else:
-                    return 'Parameter {} not of correct type {}'.format(
-                        k,
-                        signature.parameters[k].annotation
-                        )
+                # Improve type checking here
+                call_args[k] = v
 
         try:
-            self.methods[function](**call_args)
-            self.props = props._asdict()
+            props = self.methods[function](**call_args)
+            print('props',  props)
+            self.attributes = props.get_attributes()
+            
             return 'SUCCESS'
         except Exception as e:
             return str(e)
@@ -119,7 +136,45 @@ def commit_contract(contract):
 
 def ls_contracts():
     """
-    Get the name of all the contracts
+    Get the name of all the contracts returns an iterator
     """
     for contract in DB.session.query(Contract).order_by(Contract.created):
         yield contract.name
+
+
+def get_contract(name):
+    """
+    Get the contract and the current status.
+    """
+    stored_contract = DB.session.query(Contract).filter(Contract.name==name).first()
+
+    if not stored_contract:
+        raise ValueError('Contract not found')
+
+    last_status = DB.session.query(
+        Status).filter(
+            Status.contract==stored_contract
+        ).order_by(desc(Status.when)).first()
+    
+    contract = Builder(name)
+    contract.methods = dill.loads(stored_contract.methods)
+    contract.attributes = dill.loads(last_status.attributes)
+
+    return contract
+
+
+def update_status(contract):
+    """
+    Update the status of the contract in the ledger
+    """
+    stored_contract = DB.session.query(
+        Contract).filter(
+            Contract.name==contract.name).one_or_none()
+    
+    status = Status()
+    status.contract = stored_contract
+    status.when = datetime.now()
+    status.attributes = dill.dumps(contract.attributes)
+
+    DB.session.add(status)
+    DB.session.commit()

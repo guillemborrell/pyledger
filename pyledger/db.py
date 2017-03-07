@@ -24,6 +24,7 @@ class Contract(Model):
     __tablename__ = 'contracts'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    description = Column(String)
     created = Column(DateTime)
     methods = Column(LargeBinary)
     status = relationship("Status", back_populates="contract")
@@ -35,4 +36,5 @@ class Status(Model):
     contract_id = Column(Integer, ForeignKey('contracts.id'))
     contract = relationship("Contract", back_populates="status")
     attributes = Column(LargeBinary)
+    key = Column(LargeBinary)
     when = Column(DateTime)
