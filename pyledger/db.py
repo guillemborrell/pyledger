@@ -38,3 +38,6 @@ class Status(Model):
     attributes = Column(LargeBinary)
     key = Column(LargeBinary)
     when = Column(DateTime)
+
+    def __repr__(self):
+        return '<Status key: {}>'.format(self.key)

@@ -2,6 +2,7 @@ from sqlalchemy import desc
 from uuid import uuid4
 from pyledger.db import DB, Contract, Status
 from datetime import datetime
+import hashlib
 import inspect
 import dill
 
@@ -84,14 +85,12 @@ class Builder():
             return 'Function not found'
         
         for k,v in kwargs.items():
-            print(signature.parameters)
             if k in signature.parameters:
                 # Improve type checking here
                 call_args[k] = v
 
         try:
             props = self.methods[function](**call_args)
-            print('props',  props)
             self.attributes = props.get_attributes()
             
             return 'SUCCESS'
@@ -129,6 +128,7 @@ def commit_contract(contract):
     first_status.contract = stored_contract
     first_status.when = datetime.now()
     first_status.attributes = dill.dumps(contract.attributes)
+    first_status.key = b'genesis'
 
     DB.session.add(stored_contract)
     DB.session.add(first_status)
@@ -167,14 +167,26 @@ def update_status(contract):
     """
     Update the status of the contract in the ledger
     """
+    m = hashlib.sha256()
     stored_contract = DB.session.query(
         Contract).filter(
             Contract.name==contract.name).one_or_none()
+
+    last_status = DB.session.query(
+        Status).filter(
+            Status.contract==stored_contract
+        ).order_by(desc(Status.when)).first()
     
     status = Status()
     status.contract = stored_contract
     status.when = datetime.now()
     status.attributes = dill.dumps(contract.attributes)
+
+    print(last_status)
+    m.update(last_status.key)
+    m.update(status.attributes)
+
+    status.key = m.digest()
 
     DB.session.add(status)
     DB.session.commit()
