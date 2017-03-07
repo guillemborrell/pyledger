@@ -27,6 +27,8 @@ class Contract(Model):
     description = Column(String)
     created = Column(DateTime)
     methods = Column(LargeBinary)
+    api = Column(LargeBinary)
+    signatures = Column(LargeBinary)
     status = relationship("Status", back_populates="contract")
 
 

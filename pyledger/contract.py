@@ -123,6 +123,13 @@ def commit_contract(contract):
     stored_contract.created = datetime.now()
     stored_contract.description = contract.description
     stored_contract.methods = dill.dumps(contract.methods)
+    stored_contract.api = dill.dumps(contract.api()[1])
+
+    signatures = {}
+    for k, meth in contract.methods.items():
+        signatures[k] = inspect.signature(meth)
+    
+    stored_contract.signatures = dill.dumps(signatures) 
 
     first_status = Status()
     first_status.contract = stored_contract
@@ -190,3 +197,30 @@ def update_status(contract):
 
     DB.session.add(status)
     DB.session.commit()
+
+
+def get_api(name):
+    """
+    Get the contract API
+    """
+    stored_contract = DB.session.query(Contract).filter(Contract.name==name).first()
+    signatures = dill.loads(stored_contract.signatures)
+
+    api = {}
+    for sig in signatures:
+        function_spec = {}
+        for param in signatures[sig].parameters:
+            annotation = signatures[sig].parameters[param].annotation
+            if annotation == str:
+                function_spec[param] = 'str'
+            elif annotation == float:
+                function_spec[param] = 'float'
+            elif annotation == int:
+                function_spec[param] = 'int'
+            elif param == 'props':
+                pass
+            
+        api[sig] = function_spec
+
+    return api
+
