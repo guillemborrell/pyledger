@@ -1,4 +1,4 @@
-from pyledger.contract import ls_contracts, get_api, get_contract
+from pyledger.contract import ls_contracts, get_api, get_contract, commit_contract
 from pyledger.config import args
 from pyledger.db import DB, User
 from datetime import datetime
@@ -86,7 +86,8 @@ def make_tornado(ledger_configuration=None):
     :return:
     """
     if ledger_configuration and args.sync:
-        ledger_configuration()
+        contract = ledger_configuration()
+        commit_contract(contract)
     else:
         print("Warning: No ledger configuration passed to the application "
               "builder. If you are debugging or a power user, you can ignore "

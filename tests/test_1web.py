@@ -33,4 +33,3 @@ class TestApp(AsyncHTTPTestCase):
                              'key': 'My account'})))
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, b'SUCCESS')
-                             
