@@ -7,7 +7,7 @@ import inspect
 import dill
 
 
-class Props():
+class Props:
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 
@@ -18,7 +18,7 @@ class Props():
         return str(self.__dict__)
 
 
-class Builder():
+class Builder:
     def __init__(self, name='', obj=None):
         if obj is None: 
             self.attributes = {}
@@ -96,8 +96,7 @@ class Builder():
             return 'SUCCESS'
         except Exception as e:
             return str(e)
-        
-        
+
     def api(self):
         """
         Return a dictionary with the complete API for the contract
@@ -111,7 +110,7 @@ class Builder():
 
             api_spec[method] = function_spec
 
-        return (self.name, api_spec)
+        return self.name, api_spec
 
 
 def commit_contract(contract):
@@ -126,8 +125,8 @@ def commit_contract(contract):
     stored_contract.api = dill.dumps(contract.api()[1])
 
     signatures = {}
-    for k, meth in contract.methods.items():
-        signatures[k] = inspect.signature(meth)
+    for k, method in contract.methods.items():
+        signatures[k] = inspect.signature(method)
     
     stored_contract.signatures = dill.dumps(signatures) 
 
@@ -140,6 +139,7 @@ def commit_contract(contract):
     DB.session.add(stored_contract)
     DB.session.add(first_status)
     DB.session.commit()
+
 
 def ls_contracts():
     """
@@ -203,7 +203,8 @@ def get_api(name):
     """
     Get the contract API
     """
-    stored_contract = DB.session.query(Contract).filter(Contract.name==name).first()
+    stored_contract = DB.session.query(Contract).filter(
+        Contract.name == name).first()
     signatures = dill.loads(stored_contract.signatures)
 
     api = {}

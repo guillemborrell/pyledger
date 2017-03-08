@@ -1,12 +1,9 @@
-from pyledger.contract import ls_contracts, get_api, get_contract, update_status
+from pyledger.contract import ls_contracts, get_api, get_contract
 from pyledger.config import args
 from pyledger.db import DB, User
-from collections import namedtuple
 from datetime import datetime
 from uuid import uuid4
 import tornado.web
-import argparse
-import sys
 import json
 
 

@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, LargeBinar
 from sqlalchemy.orm import relationship
 from pyledger.config import args
 
+
 class Handler():
     def __init__(self):
         self.engine = create_engine(args.db, echo=args.debug)
@@ -19,6 +20,7 @@ DB = Handler()
 Model = DB.Model
 
 # Now the models
+
 
 class Contract(Model):
     __tablename__ = 'contracts'
