@@ -30,6 +30,8 @@ class Contract(Model):
     api = Column(LargeBinary)
     signatures = Column(LargeBinary)
     status = relationship("Status", back_populates="contract")
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="contracts")
 
 
 class Status(Model):
@@ -40,6 +42,19 @@ class Status(Model):
     attributes = Column(LargeBinary)
     key = Column(LargeBinary)
     when = Column(DateTime)
+    owner = Column(String)
 
     def __repr__(self):
         return '<Status key: {}>'.format(self.key)
+
+
+class User(Model):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    when = Column(DateTime)
+    info = Column(LargeBinary)
+    key = Column(String)
+    contracts = relationship("Contract", back_populates="user")
+
+    def __repr__(self):
+        return '<User key: {}>'.format(self.key)
