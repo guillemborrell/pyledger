@@ -6,6 +6,7 @@ from pyledger.db import DB
 # Create the tables for the tests.
 DB.sync_tables()
 
+
 def test_0props():
     contract = Builder()
     def add_account(props, key):
@@ -79,6 +80,7 @@ def test_4commit():
     contracts = [n for n in ls_contracts()]
     assert contracts == ['New contract']
 
+
 def test_5get_contract():
     contract = get_contract('New contract')
     contract.call('add_account', key='My_account')
@@ -92,6 +94,7 @@ def test_5get_contract():
 def test_6get_wrong_contract():
     with pytest.raises(ValueError) as excinfo:
         contract = get_contract('Another contract')
+
 
 def test_7get_api():
     api = get_api('New contract')

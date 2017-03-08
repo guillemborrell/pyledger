@@ -88,10 +88,15 @@ def make_tornado(ledger_configuration=None):
     if ledger_configuration and args.sync:
         contract = ledger_configuration()
         commit_contract(contract)
+
     else:
         print("Warning: No ledger configuration passed to the application "
               "builder. If you are debugging or a power user, you can ignore "
               "this message.")
+
+    # Sync tables here if not under testing environment
+    if args.sync and not args.test:
+        DB.sync_tables()
 
     return tornado.web.Application(
         [
