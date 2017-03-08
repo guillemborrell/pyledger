@@ -1,3 +1,6 @@
+"""
+This is an example server so you can use it as a template.
+"""
 from pyledger.handlers import make_tornado
 from pyledger.config import args
 import tornado.ioloop
