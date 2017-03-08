@@ -8,6 +8,12 @@ import tornado.wsgi
 import json
 
 
+# Sync tables here if not under testing environment
+if args.sync and not args.test:
+    DB.sync_tables()
+    print("Warning: Syncing database at {}".format(args.db))
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Hello, world")
@@ -36,7 +42,11 @@ class APIHandler(tornado.web.RequestHandler):
             self.write('You must specify a contract')
 
         else:
-            self.write(get_api(contract))
+            api = get_api(contract)
+            if api:
+                self.write(api)
+            else:
+                self.write('"Contract not found"')
 
 
 class CallHandler(tornado.web.RequestHandler):
@@ -89,14 +99,10 @@ def make_tornado(ledger_configuration=None):
         contract = ledger_configuration()
         commit_contract(contract)
 
-    else:
+    elif args.sync:
         print("Warning: No ledger configuration passed to the application "
               "builder. If you are debugging or a power user, you can ignore "
               "this message.")
-
-    # Sync tables here if not under testing environment
-    if args.sync and not args.test:
-        DB.sync_tables()
 
     return tornado.web.Application(
         [

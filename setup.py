@@ -24,7 +24,7 @@ setup(name='pyledger',
           'License :: OSI Approved :: GNU Affero General Public License v3'
       ],
       setup_requires=['pytest-runner', 'pytest'],
-      install_requires=['protobuf>=3.0.0', 'requests', 'tornado', 'dill', 'sqlalchemy'],
+      install_requires=['protobuf>=3.0.0', 'tornado', 'dill', 'sqlalchemy'],
       entry_points={
           'console_scripts': ['pyledger-server=pyledger.server:main']
           }

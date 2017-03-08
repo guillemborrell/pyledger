@@ -15,7 +15,7 @@ class Props:
         return self.__dict__
 
     def __repr__(self):
-        return str(self.__dict__)
+        return 'Props: ' + str(self.__dict__)
 
 
 class Builder:
@@ -77,23 +77,29 @@ class Builder:
         """
         # Build named tuple with the properies
         props = Props(**self.attributes)
-        
+
         signature = inspect.signature(self.methods[function])
         call_args = {'props': props}
 
         if function not in self.methods:
             return 'Function not found'
         
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             if k in signature.parameters:
                 # Improve type checking here
                 call_args[k] = v
 
         try:
             props = self.methods[function](**call_args)
-            self.attributes = props.get_attributes()
+
+            if type(props) == tuple:
+                return_value = props[1]
+                self.attributes = props[0].get_attributes()
+            else:
+                return_value = 'SUCCESS'
+                self.attributes = props.get_attributes()
             
-            return 'SUCCESS'
+            return return_value
         except Exception as e:
             return str(e)
 
@@ -205,6 +211,9 @@ def get_api(name):
     """
     stored_contract = DB.session.query(Contract).filter(
         Contract.name == name).first()
+    if not stored_contract:
+        return None
+
     signatures = dill.loads(stored_contract.signatures)
 
     api = {}
