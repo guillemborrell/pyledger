@@ -4,6 +4,7 @@ from pyledger.db import DB, User
 from datetime import datetime
 from uuid import uuid4
 import tornado.web
+import tornado.wsgi
 import json
 
 
@@ -77,7 +78,20 @@ class CallHandler(tornado.web.RequestHandler):
         self.write(response)
 
         
-def make_application():
+def make_tornado(ledger_configuration=None):
+    """
+    Make a tornado application from the ledger configuration
+
+    :param ledger_configuration:
+    :return:
+    """
+    if ledger_configuration and args.sync:
+        ledger_configuration()
+    else:
+        print("Warning: No ledger configuration passed to the application "
+              "builder. If you are debugging or a power user, you can ignore "
+              "this message.")
+
     return tornado.web.Application(
         [
             (r"/contracts", ContractsHandler),
@@ -88,3 +102,13 @@ def make_application():
         ],
         db=args.db,
         debug=args.debug)
+
+
+def make_wsgi(ledger_configuration=None):
+    """
+    Make a WSGI application from the ledger configuration
+
+    :param ledger_configuration:
+    :return:
+    """
+    return tornado.wsgi.WSGIAdapter(make_tornado(ledger_configuration))
