@@ -24,6 +24,16 @@ if len(sys.argv) > 2 and 'test' in sys.argv[2]:
     args = argstype(db='sqlite://', debug=False, sync=True, port=8888,
                     test=True)
 
+elif 'sphinx' in sys.argv[0]:
+    argstype = namedtuple('Arguments', ['db', 'debug', 'sync', 'port', 'test'])
+    args = argstype(db='sqlite://', debug=False, sync=False, port=8888,
+                    test=False)
+
+elif 'pydevconsole' in sys.argv[0]:
+    argstype = namedtuple('Arguments', ['db', 'debug', 'sync', 'port', 'test'])
+    args = argstype(db='sqlite://', debug=False, sync=False, port=8888,
+                    test=False)
+
 else:
     parser = argparse.ArgumentParser(description='Run the PyLedger server')
     parser.add_argument('--db', help="SQLAlchemy database address",

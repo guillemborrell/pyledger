@@ -14,7 +14,7 @@ transfer some amount.
 
 A smart contract is an application, so you need to code to create one. In
 Pyledger you can implement your smart contract in Python. In a few words, a
-smart contract in PyLedger is a function that uses the Builder class
+smart contract in Pyledger is a function that uses the Builder class
 
 ```python
 from pyledger.contract import Builder

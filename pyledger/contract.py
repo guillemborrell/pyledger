@@ -20,7 +20,10 @@ from pyledger.db import DB, Contract, Status
 from datetime import datetime
 import hashlib
 import inspect
-import dill
+try:
+    import dill
+except ModuleNotFoundError:
+    print('Check that you are building the documentation')
 
 
 class Props:
