@@ -131,14 +131,4 @@ client::
     5.0
     (http://localhost:8888)> exit
 
-        props.accounts[key] += quantity
-        return props
-
-    def transfer(props, source: str, dest: str, quantity: float):
-        if source not in props.accounts:
-            raise Exception('Source account not found')
-        if dest not in props.accounts:
-            raise Exception('Destination account not found')
-        if props.accounts[source] < quantity:
-            raise Exception('Not enough funds in source account')
 
