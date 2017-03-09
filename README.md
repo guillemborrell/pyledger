@@ -12,7 +12,7 @@ currency system. You have some features you consider necessary, namely
 creating accounts, adding currency to any account, checking the balance and
 transfer some amount.
 
-A smart contract is an application, therefore a smart contract is code. In
+A smart contract is an application, so you need to code to create one. In
 Pyledger you can implement your smart contract in Python. In a few words, a
 smart contract in PyLedger is a function that uses the Builder class
 

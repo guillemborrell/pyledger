@@ -31,7 +31,7 @@ setup(name='pyledger',
       author_email='guillemborrell@gmail.com',
       packages=['pyledger'],
       classifiers=[
-          'Development Status :: 1 - Planning',
+          'Development Status :: 3 - Alpha',
           'Environment :: Console',
           'Intended Audience :: Developers',
           'Programming Language :: Python',
@@ -44,6 +44,6 @@ setup(name='pyledger',
       install_requires=['protobuf>=3.0.0', 'tornado', 'dill', 'sqlalchemy'],
       entry_points={
           'console_scripts': ['pyledger-server=pyledger.server:main',
-                              'pyledger-shell=pyledger.clients:runr']
+                              'pyledger-shell=pyledger.clients:run_repl']
           }
       )
