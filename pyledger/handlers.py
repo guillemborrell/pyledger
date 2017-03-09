@@ -72,7 +72,6 @@ class CallHandler(tornado.web.RequestHandler):
 
         api = get_api(name)[function]
 
-        print(arguments)
         for arg in arguments.keys():
             if arg in api:
                 if api[arg] == 'int':

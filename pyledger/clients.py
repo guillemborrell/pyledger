@@ -105,7 +105,6 @@ class REPL(cmd.Cmd):
         call_dict = {'contract': contract,
                      'function': function}
         call_dict.update(call_args)
-        print(call_dict)
 
         response = client.fetch('{}/call?{}'.format(
             self.server,
