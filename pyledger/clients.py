@@ -3,7 +3,6 @@ import sys
 import json
 import argparse
 from tornado.httpclient import HTTPClient
-from collections import OrderedDict
 from urllib import parse
 
 

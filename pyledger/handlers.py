@@ -6,9 +6,7 @@ from datetime import datetime
 from uuid import uuid4
 import tornado.web
 import tornado.wsgi
-import traceback
 import json
-import sys
 
 
 # Sync tables here if not under testing environment
