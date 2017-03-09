@@ -3,18 +3,19 @@ import sys
 import json
 import argparse
 from tornado.httpclient import HTTPClient
+from collections import OrderedDict
 from urllib import parse
 
-parser = argparse.ArgumentParser(description='Pyledger client')
-parser.add_argument('--server',
-                    help='Url of the ledger server',
-                    type=str,
-                    default='http://localhost:8888')
 
-args = parser.parse_args()
+class REPL(cmd.Cmd):
+    parser = argparse.ArgumentParser(description='Pyledger client')
+    parser.add_argument('--server',
+                        help='Url of the ledger server',
+                        type=str,
+                        default='http://localhost:8888')
 
+    args = parser.parse_args()
 
-class Client(cmd.Cmd):
     intro = 'PyLedger simple client'
     server = args.server
     prompt = '({})> '.format(args.server)
@@ -80,9 +81,39 @@ class Client(cmd.Cmd):
         """
         Call function from the contract
 
-        call function argument1 argument2 argument3 ...
+        call contract function argument1 argument2 argument3 ...
         """
-        arguments = arg.split()
+        contract, function, *arguments = arg.split()
+        client = HTTPClient()
+        response = client.fetch('{}/api?{}'.format(
+            self.server,
+            parse.urlencode({'contract': '{}'.format(contract)})
+        ))
+        api = json.loads(response.body.decode('utf-8'))
 
-if __name__ == '__main__':
-    Client().cmdloop()
+        if type(api) == str:
+            print("Contract not found")
+            return
+
+        if function not in api:
+            print("Function not found")
+            return
+
+        signature = [v for v in api[function]]
+
+        call_args = {sig: val for sig, val in zip(signature, arguments)}
+        call_dict = {'contract': contract,
+                     'function': function}
+        call_dict.update(call_args)
+        print(call_dict)
+
+        response = client.fetch('{}/call?{}'.format(
+            self.server,
+            parse.urlencode(call_dict)
+        ))
+
+        print(response.body.decode('utf-8'))
+
+
+def run_repl():
+    REPL().cmdloop()

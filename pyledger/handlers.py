@@ -1,11 +1,14 @@
-from pyledger.contract import ls_contracts, get_api, get_contract, commit_contract
+from pyledger.contract import ls_contracts, get_api, get_contract, \
+    commit_contract, update_status
 from pyledger.config import args
 from pyledger.db import DB, User
 from datetime import datetime
 from uuid import uuid4
 import tornado.web
 import tornado.wsgi
+import traceback
 import json
+import sys
 
 
 # Sync tables here if not under testing environment
@@ -68,7 +71,8 @@ class CallHandler(tornado.web.RequestHandler):
             del arguments['function']
 
         api = get_api(name)[function]
-            
+
+        print(arguments)
         for arg in arguments.keys():
             if arg in api:
                 if api[arg] == 'int':
@@ -81,7 +85,10 @@ class CallHandler(tornado.web.RequestHandler):
         contract = get_contract(name)
 
         try:
+            print('Calling', function, 'With args', arguments)
             response = contract.call(function, **arguments)
+            update_status(contract)
+
         except Exception as e:
             response = str(e)
             

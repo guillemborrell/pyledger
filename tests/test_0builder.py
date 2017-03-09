@@ -20,7 +20,7 @@ def test_0props():
 def test_1signature():
     contract = Builder()
     def add_account(props, key):
-        props.accounts[key] = 0
+        props.accounts[key] = 0.0
         return props
 
     with pytest.raises(ValueError) as excinfo:
@@ -31,7 +31,7 @@ def test_2builder():
     contract = Builder()
     
     def add_account(props, key: str):
-        props.accounts[key] = 0
+        props.accounts[key] = 0.0
         return props
     
     def increment(props, key: str, quantity: float):
@@ -49,7 +49,7 @@ def test_3call():
     contract = Builder()
     
     def add_account(props, key: str):
-        props.accounts[key] = 0
+        props.accounts[key] = 0.0
         return props
     
     def increment(props, key: str, quantity: float):
@@ -66,7 +66,7 @@ def test_4commit():
     contract = Builder(name='New contract')
     
     def add_account(props, key: str):
-        props.accounts[key] = 0
+        props.accounts[key] = 0.0
         return props
     
     def increment(props, key: str, quantity: float):

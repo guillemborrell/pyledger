@@ -93,10 +93,10 @@ class Builder:
             props = self.methods[function](**call_args)
 
             if type(props) == tuple:
-                return_value = props[1]
+                return_value = props[1].encode('utf-8')
                 self.attributes = props[0].get_attributes()
             else:
-                return_value = 'SUCCESS'
+                return_value = b'SUCCESS'
                 self.attributes = props.get_attributes()
             
             return return_value
@@ -195,8 +195,8 @@ def update_status(contract):
     status.when = datetime.now()
     status.attributes = dill.dumps(contract.attributes)
 
-    print(last_status)
     m.update(last_status.key)
+    m.update(status.when.isoformat().encode('utf-8'))
     m.update(status.attributes)
 
     status.key = m.digest()

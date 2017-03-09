@@ -6,7 +6,10 @@ import tornado.ioloop
 
 def ledger():
     def add_account(props, key: str):
-        props.accounts[key] = 0
+        if key in props.accounts:
+            raise Exception('Account already exists')
+
+        props.accounts[key] = 0.0
         return props
 
     def increment(props, key: str, quantity: float):
@@ -31,11 +34,12 @@ def ledger():
 
     def balance(props, key: str):
         if key not in props.accounts:
+            print(props.accounts)
             raise Exception('Account not found')
 
-        return props, props.accounts[key]
+        return props, str(props.accounts[key])
 
-    contract = Builder('Digital Currency')
+    contract = Builder('DigitalCurrency')
     contract.add_property('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)

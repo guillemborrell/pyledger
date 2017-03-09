@@ -26,6 +26,7 @@ setup(name='pyledger',
       setup_requires=['pytest-runner', 'pytest'],
       install_requires=['protobuf>=3.0.0', 'tornado', 'dill', 'sqlalchemy'],
       entry_points={
-          'console_scripts': ['pyledger-server=pyledger.server:main']
+          'console_scripts': ['pyledger-server=pyledger.server:main',
+                              'pyledger-shell=pyledger.clients:run_repl']
           }
       )
