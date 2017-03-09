@@ -1,3 +1,19 @@
+#    Pyledger. A simple ledger for smart contracts implemented in Python
+#    Copyright (C) 2017  Guillem Borrell Nogueras
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import pytest
 from pyledger.contract import Builder, commit_contract, ls_contracts, get_contract, \
     update_status, get_api
@@ -59,7 +75,7 @@ def test_3call():
     contract.add_property('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)
-    assert contract.call('add_account', key='My_account') == 'SUCCESS'
+    assert contract.call('add_account', key='My_account') == b'SUCCESS'
     
 
 def test_4commit():
