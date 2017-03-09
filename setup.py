@@ -23,10 +23,21 @@ __version__ = None
 with open('pyledger/__init__.py') as f:
     exec(f.read())
 
+long_description = """
+.. image:: https://badge.fury.io/py/pyledger.svg
+    :target: https://badge.fury.io/py/pyledger
+
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: https://pyledger.readthedocs.io/en/latest
+
+.. image:: https://badge.fury.io/gh/guillemborrell%2Fpyledger.svg
+    :target: https://badge.fury.io/gh/guillemborrell%2Fpyledger
+"""
 
 setup(name='pyledger',
       version=__version__,
-      description='A simple ledger useful to understand DLT (blockchain)',
+      description='A simple ledger for smart contracts written in Python',
+      long_description=long_description,
       author='Guillem Borrell',
       author_email='guillemborrell@gmail.com',
       packages=['pyledger'],

@@ -3,6 +3,15 @@ Pyledger
 
 **A simple ledger for smart contracts written in Python**
 
+.. image:: https://badge.fury.io/py/pyledger.svg
+    :target: https://badge.fury.io/py/pyledger
+
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: https://pyledger.readthedocs.io/en/latest
+
+.. image:: https://badge.fury.io/gh/guillemborrell%2Fpyledger.svg
+    :target: https://badge.fury.io/gh/guillemborrell%2Fpyledger
+
 Smart contracts are taking over the financial ecosystem, but most platforms
 are terribly complicated given their parallel nature. What happens is that,
 if you don't need to deal with parallelism, building a ledger for smart
