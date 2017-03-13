@@ -105,7 +105,7 @@ client::
 
     Documented commands (type help <topic>):
     ========================================
-    api  call  contracts  exit  help  key
+    api  call  contracts  exit  help  key  status
 
     (http://localhost:8888)> contracts
          DigitalCurrency
