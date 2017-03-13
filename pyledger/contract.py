@@ -46,6 +46,8 @@ class Builder:
             raise NotImplemented('Inspecting from class not supported yet')
 
         if name:
+            if ' ' in name:
+                raise ValueError('The name of the contract should include no spaces')
             self.name = name
         else:
             self.name = str(uuid4())

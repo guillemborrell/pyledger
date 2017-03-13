@@ -25,6 +25,7 @@ DB.sync_tables()
 
 def test_0props():
     contract = Builder()
+
     def add_account(props, key):
         props.accounts[key] = 0
         return props
@@ -35,6 +36,7 @@ def test_0props():
     
 def test_1signature():
     contract = Builder()
+
     def add_account(props, key):
         props.accounts[key] = 0.0
         return props
@@ -58,7 +60,7 @@ def test_2builder():
     contract.add_method(add_account)
     contract.add_method(increment)
 
-    assert [k for k in contract.api()[1].keys()] == ['add_account', 'increment']
+    assert sorted([k for k in contract.api()[1].keys()]) == ['add_account', 'increment']
 
 
 def test_3call():
@@ -79,7 +81,7 @@ def test_3call():
     
 
 def test_4commit():
-    contract = Builder(name='New contract')
+    contract = Builder(name='NewContract')
     
     def add_account(props, key: str):
         props.accounts[key] = 0.0
@@ -94,16 +96,16 @@ def test_4commit():
     contract.add_method(increment)
     commit_contract(contract)
     contracts = [n for n in ls_contracts()]
-    assert contracts == ['New contract']
+    assert contracts == ['NewContract']
 
 
 def test_5get_contract():
-    contract = get_contract('New contract')
+    contract = get_contract('NewContract')
     contract.call('add_account', key='My_account')
     contract.call('increment', key='My_account', quantity=100.0)
     update_status(contract)
 
-    contract = get_contract('New contract')
+    contract = get_contract('NewContract')
     assert contract.get_property('accounts') == {'accounts': {'My_account': 100.0}}
 
 
@@ -113,13 +115,12 @@ def test_6get_wrong_contract():
 
 
 def test_7get_api():
-    api = get_api('New contract')
+    api = get_api('NewContract')
     assert api == {'add_account': {'key': 'str'},
                    'increment': {'key': 'str', 'quantity': 'float'}
-    }
+                   }
         
         
 if __name__ == '__main__':
     test_4commit()
     test_5get_contract()
-    
