@@ -20,10 +20,13 @@ from pyledger.db import DB, Contract, Status
 from datetime import datetime
 import hashlib
 import inspect
+
+
 try:
     import dill
-except ModuleNotFoundError:
+except ImportError:
     print('Check that you are building the documentation')
+    dill = None
 
 
 class Attrs:
@@ -62,12 +65,6 @@ class Builder:
         Add attribute *name* to the contract with an initial value of *value*
         """
         self.attributes[name] = value
-
-    def get_property(self, name:str):
-        """
-        Get contract property.
-        """
-        return self.attributes
 
     def add_method(self, method, name: str=''):
         """
@@ -180,14 +177,14 @@ def get_contract(name):
     """
     Get the contract and the current status.
     """
-    stored_contract = DB.session.query(Contract).filter(Contract.name==name).first()
+    stored_contract = DB.session.query(Contract).filter(Contract.name == name).first()
 
     if not stored_contract:
         raise ValueError('Contract not found')
 
     last_status = DB.session.query(
         Status).filter(
-            Status.contract==stored_contract
+            Status.contract == stored_contract
         ).order_by(desc(Status.when)).first()
     
     contract = Builder(name)
@@ -197,6 +194,22 @@ def get_contract(name):
     return contract
 
 
+def get_status(name):
+    stored_contract = DB.session.query(
+        Contract).filter(
+            Contract.name == name).one_or_none()
+
+    if not stored_contract:
+        raise ValueError('Contract not found')
+
+    last_status = DB.session.query(
+        Status).filter(
+            Status.contract == stored_contract
+        ).order_by(desc(Status.when)).first()
+
+    return dill.loads(last_status.attributes)
+
+
 def update_status(contract):
     """
     Update the status of the contract in the ledger
@@ -204,11 +217,11 @@ def update_status(contract):
     m = hashlib.sha256()
     stored_contract = DB.session.query(
         Contract).filter(
-            Contract.name==contract.name).one_or_none()
+            Contract.name == contract.name).one_or_none()
 
     last_status = DB.session.query(
         Status).filter(
-            Status.contract==stored_contract
+            Status.contract == stored_contract
         ).order_by(desc(Status.when)).first()
     
     status = Status()
@@ -254,4 +267,3 @@ def get_api(name):
         api[sig] = function_spec
 
     return api
-

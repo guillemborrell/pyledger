@@ -18,6 +18,7 @@ import cmd
 import sys
 import json
 import argparse
+import pprint
 from tornado.httpclient import HTTPClient
 from urllib import parse
 
@@ -91,6 +92,21 @@ class REPL(cmd.Cmd):
             print('  ', function, '(', signature, ')')
 
         print('')
+
+    def do_status(self, arg):
+        """
+        Check the contract current status of the attributes
+
+        :param arg: The name of the contract
+        :return:
+        """
+        client = HTTPClient()
+        response = client.fetch('{}/status?{}'.format(
+            self.server,
+            parse.urlencode({'contract': '{}'.format(arg)})
+        ))
+        status = json.loads(response.body.decode('utf-8'))
+        pprint.pprint(status)
 
     def do_call(self, arg):
         """

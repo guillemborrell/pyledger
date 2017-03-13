@@ -16,7 +16,7 @@
 
 import pytest
 from pyledger.contract import Builder, commit_contract, ls_contracts, get_contract, \
-    update_status, get_api
+    update_status, get_api, get_status
 from pyledger.db import DB
 
 # Create the tables for the tests.
@@ -106,7 +106,7 @@ def test_5get_contract():
     update_status(contract)
 
     contract = get_contract('NewContract')
-    assert contract.get_property('accounts') == {'accounts': {'My_account': 100.0}}
+    assert contract.attributes['accounts'] == {'My_account': 100.0}
 
 
 def test_6get_wrong_contract():
@@ -119,6 +119,11 @@ def test_7get_api():
     assert api == {'add_account': {'key': 'str'},
                    'increment': {'key': 'str', 'quantity': 'float'}
                    }
+
+
+def test_8get_status():
+    status = get_status('NewContract')
+    assert status == {'accounts': {'My_account': 100.0}}
         
         
 if __name__ == '__main__':

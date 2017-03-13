@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyledger.contract import ls_contracts, get_api, get_contract, \
-    commit_contract, update_status
+    commit_contract, update_status, get_status
 from pyledger.config import args
 from pyledger.db import DB, User
 from datetime import datetime
@@ -62,6 +62,20 @@ class APIHandler(tornado.web.RequestHandler):
             api = get_api(contract)
             if api:
                 self.write(api)
+            else:
+                self.write('"Contract not found"')
+
+
+class StatusHandler(tornado.web.RequestHandler):
+    def get(self):
+        contract = self.get_argument('contract', default=None)
+        if contract is None:
+            self.write('You must specify a contract')
+
+        else:
+            status = get_status(contract)
+            if status:
+                self.write(json.dumps(status))
             else:
                 self.write('"Contract not found"')
 
@@ -129,6 +143,7 @@ def make_tornado(ledger_configuration=None):
             (r"/contracts", ContractsHandler),
             (r"/api", APIHandler),
             (r"/call", CallHandler),
+            (r"/status", StatusHandler),
             (r"/new_user", NewUserHandler),
             (r"/", MainHandler),
         ],

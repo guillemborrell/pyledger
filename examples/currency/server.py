@@ -21,39 +21,39 @@ import tornado.ioloop
 
 
 def ledger():
-    def add_account(props, key: str):
-        if key in props.accounts:
+    def add_account(attrs, key: str):
+        if key in attrs.accounts:
             raise Exception('Account already exists')
 
-        props.accounts[key] = 0.0
-        return props
+        attrs.accounts[key] = 0.0
+        return attrs
 
-    def increment(props, key: str, quantity: float):
-        if key not in props.accounts:
+    def increment(attrs, key: str, quantity: float):
+        if key not in attrs.accounts:
             raise Exception('Account not found')
 
-        props.accounts[key] += quantity
-        return props
+        attrs.accounts[key] += quantity
+        return attrs
 
-    def transfer(props, source: str, dest: str, quantity: float):
-        if source not in props.accounts:
+    def transfer(attrs, source: str, dest: str, quantity: float):
+        if source not in attrs.accounts:
             raise Exception('Source account not found')
-        if dest not in props.accounts:
+        if dest not in attrs.accounts:
             raise Exception('Destination account not found')
-        if props.accounts[source] < quantity:
+        if attrs.accounts[source] < quantity:
             raise Exception('Not enough funds in source account')
 
-        props.accounts[source] -= quantity
-        props.accounts[dest] += quantity
+        attrs.accounts[source] -= quantity
+        attrs.accounts[dest] += quantity
 
-        return props
+        return attrs
 
-    def balance(props, key: str):
-        if key not in props.accounts:
-            print(props.accounts)
+    def balance(attrs, key: str):
+        if key not in attrs.accounts:
+            print(attrs.accounts)
             raise Exception('Account not found')
 
-        return props, str(props.accounts[key])
+        return attrs, str(attrs.accounts[key])
 
     contract = Builder('DigitalCurrency')
     contract.add_property('accounts', {})

@@ -38,11 +38,18 @@ class TestApp(AsyncHTTPTestCase):
         response = self.fetch('/api?{}'.format(
             parse.urlencode({'contract': 'NewContract'})
         ))
-        print(json.loads(response.body.decode('utf-8')))
         self.assertEqual(response.code, 200)
         self.assertEqual(len(response.body), 81)
+
+    def test_03get_status(self):
+        response = self.fetch('/status?{}'.format(
+            parse.urlencode({'contract': 'NewContract'})
+        ))
+        self.assertEqual(response.code, 200)
+        self.assertEqual(json.loads(response.body.decode('utf-8')),
+                         {'accounts': {'My_account': 100.0}})
         
-    def test_03call(self):
+    def test_04call(self):
         response = self.fetch('/call?{}'.format(
             parse.urlencode({'contract': 'NewContract',
                              'function': 'add_account',
