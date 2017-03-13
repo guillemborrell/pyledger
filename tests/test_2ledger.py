@@ -22,13 +22,13 @@ import json
 
 
 def ledger():
-    def add_account(props, key: str):
-        props.accounts[key] = 0
-        return props
+    def add_account(attrs, key: str):
+        attrs.accounts[key] = 0
+        return attrs
 
-    def increment(props, key: str, quantity: float):
-        props.accounts[key] += quantity
-        return props
+    def increment(attrs, key: str, quantity: float):
+        attrs.accounts[key] += quantity
+        return attrs
 
     contract = Builder('AnotherContract')
     contract.add_property('accounts', {})

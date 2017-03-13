@@ -26,7 +26,7 @@ except ModuleNotFoundError:
     print('Check that you are building the documentation')
 
 
-class Props:
+class Attrs:
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 
@@ -34,7 +34,7 @@ class Props:
         return self.__dict__
 
     def __repr__(self):
-        return 'Props: ' + str(self.__dict__)
+        return 'attrs: ' + str(self.__dict__)
 
 
 class Builder:
@@ -78,14 +78,14 @@ class Builder:
 
         sig = inspect.signature(method)
 
-        if 'props' not in sig.parameters:
+        if 'attrs' not in sig.parameters:
             raise ValueError(
                 'The first argument of the method must be'
-                ' called props and not annotated'
+                ' called attrs and not annotated'
             )
         else:
             for param in sig.parameters:
-                if not param == 'props' and sig.parameters[param].annotation == inspect._empty:
+                if not param == 'attrs' and sig.parameters[param].annotation == inspect._empty:
                     raise ValueError(
                         'Parameter {} without signature'.format(
                             param))
@@ -97,10 +97,10 @@ class Builder:
         Call the function of the smart contract passing the keyword arguments.
         """
         # Build named tuple with the properies
-        props = Props(**self.attributes)
+        attrs = Attrs(**self.attributes)
 
         signature = inspect.signature(self.methods[function])
-        call_args = {'props': props}
+        call_args = {'attrs': attrs}
 
         if function not in self.methods:
             return 'Function not found'
@@ -111,14 +111,14 @@ class Builder:
                 call_args[k] = v
 
         try:
-            props = self.methods[function](**call_args)
+            attrs = self.methods[function](**call_args)
 
-            if type(props) == tuple:
-                return_value = props[1].encode('utf-8')
-                self.attributes = props[0].get_attributes()
+            if type(attrs) == tuple:
+                return_value = attrs[1].encode('utf-8')
+                self.attributes = attrs[0].get_attributes()
             else:
                 return_value = b'SUCCESS'
-                self.attributes = props.get_attributes()
+                self.attributes = attrs.get_attributes()
             
             return return_value
         except Exception as e:
@@ -248,7 +248,7 @@ def get_api(name):
                 function_spec[param] = 'float'
             elif annotation == int:
                 function_spec[param] = 'int'
-            elif param == 'props':
+            elif param == 'attrs':
                 pass
             
         api[sig] = function_spec

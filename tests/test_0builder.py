@@ -23,12 +23,12 @@ from pyledger.db import DB
 DB.sync_tables()
 
 
-def test_0props():
+def test_0attrs():
     contract = Builder()
 
-    def add_account(props, key):
-        props.accounts[key] = 0
-        return props
+    def add_account(attrs, key):
+        attrs.accounts[key] = 0
+        return attrs
 
     with pytest.raises(ValueError) as excinfo:
         contract.add_method(add_account)
@@ -37,9 +37,9 @@ def test_0props():
 def test_1signature():
     contract = Builder()
 
-    def add_account(props, key):
-        props.accounts[key] = 0.0
-        return props
+    def add_account(attrs, key):
+        attrs.accounts[key] = 0.0
+        return attrs
 
     with pytest.raises(ValueError) as excinfo:
         contract.add_method(add_account)
@@ -48,13 +48,13 @@ def test_1signature():
 def test_2builder():
     contract = Builder()
     
-    def add_account(props, key: str):
-        props.accounts[key] = 0.0
-        return props
+    def add_account(attrs, key: str):
+        attrs.accounts[key] = 0.0
+        return attrs
     
-    def increment(props, key: str, quantity: float):
-        props.accounts[key] += quantity
-        return props
+    def increment(attrs, key: str, quantity: float):
+        attrs.accounts[key] += quantity
+        return attrs
     
     contract.add_property('accounts', {})
     contract.add_method(add_account)
@@ -66,13 +66,13 @@ def test_2builder():
 def test_3call():
     contract = Builder()
     
-    def add_account(props, key: str):
-        props.accounts[key] = 0.0
-        return props
+    def add_account(attrs, key: str):
+        attrs.accounts[key] = 0.0
+        return attrs
     
-    def increment(props, key: str, quantity: float):
-        props.accounts[key] += quantity
-        return props
+    def increment(attrs, key: str, quantity: float):
+        attrs.accounts[key] += quantity
+        return attrs
     
     contract.add_property('accounts', {})
     contract.add_method(add_account)
@@ -83,13 +83,13 @@ def test_3call():
 def test_4commit():
     contract = Builder(name='NewContract')
     
-    def add_account(props, key: str):
-        props.accounts[key] = 0.0
-        return props
+    def add_account(attrs, key: str):
+        attrs.accounts[key] = 0.0
+        return attrs
     
-    def increment(props, key: str, quantity: float):
-        props.accounts[key] += quantity
-        return props
+    def increment(attrs, key: str, quantity: float):
+        attrs.accounts[key] += quantity
+        return attrs
     
     contract.add_property('accounts', {})
     contract.add_method(add_account)
