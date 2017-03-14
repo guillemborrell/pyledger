@@ -31,7 +31,7 @@ def ledger():
         return attrs
 
     contract = Builder('AnotherContract')
-    contract.add_property('accounts', {})
+    contract.add_attribute('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)
 

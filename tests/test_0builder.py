@@ -56,7 +56,7 @@ def test_2builder():
         attrs.accounts[key] += quantity
         return attrs
     
-    contract.add_property('accounts', {})
+    contract.add_attribute('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)
 
@@ -74,7 +74,7 @@ def test_3call():
         attrs.accounts[key] += quantity
         return attrs
     
-    contract.add_property('accounts', {})
+    contract.add_attribute('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)
     assert contract.call('add_account', key='My_account') == b'SUCCESS'
@@ -91,7 +91,7 @@ def test_4commit():
         attrs.accounts[key] += quantity
         return attrs
     
-    contract.add_property('accounts', {})
+    contract.add_attribute('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)
     commit_contract(contract)

@@ -60,7 +60,7 @@ class Builder:
     def add_description(self, description: str):
         self.description = description
 
-    def add_property(self, name: str, value):
+    def add_attribute(self, name: str, value):
         """
         Add attribute *name* to the contract with an initial value of *value*
         """

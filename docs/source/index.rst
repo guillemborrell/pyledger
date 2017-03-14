@@ -66,7 +66,7 @@ smart contract in Pyledger is a function that uses the Builder class
             return attrs, str(attrs.accounts[key])
 
         contract = Builder('DigitalCurrency')
-        contract.add_property('accounts', {})
+        contract.add_attribute('accounts', {})
         contract.add_method(add_account)
         contract.add_method(increment)
         contract.add_method(transfer)
