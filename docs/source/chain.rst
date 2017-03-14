@@ -10,7 +10,8 @@ One of the important features of the blockchain is that it is impossible for
 anyone, even the owner of the data, to tamper with its contents. Pyledger
 also has this feature, but in a slightly different fashion. All the statuses
 stored in the ledger for every contract are hashed with te previous hash and
-the date and time of insertion.
+the date and time of insertion. This is a kind of *status chain* instead of a
+block chain.
 
 All the hashes are secure, using a SHA-256 for which no collision has been
 found yet, which is the same as the used by Bitcoin. This means that one can
