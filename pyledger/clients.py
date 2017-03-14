@@ -108,7 +108,7 @@ class REPL(cmd.Cmd):
         status = json.loads(response.body.decode('utf-8'))
         pprint.pprint(status)
 
-    def do_status(self, arg):
+    def do_verify(self, arg):
         """
         Verify the consistency of all the statuses of the contract
 
