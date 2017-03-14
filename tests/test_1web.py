@@ -48,8 +48,16 @@ class TestApp(AsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         self.assertEqual(json.loads(response.body.decode('utf-8')),
                          {'accounts': {'My_account': 100.0}})
+
+    def test_04verify_contract(self):
+        response = self.fetch('/verify?{}'.format(
+        parse.urlencode({'contract': 'NewContract'})
+        ))
+        self.assertEqual(response.code, 200)
+        self.assertEqual(json.loads(response.body.decode('utf-8')),
+                         'Contract OK')
         
-    def test_04call(self):
+    def test_05call(self):
         response = self.fetch('/call?{}'.format(
             parse.urlencode({'contract': 'NewContract',
                              'function': 'add_account',

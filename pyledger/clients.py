@@ -108,6 +108,21 @@ class REPL(cmd.Cmd):
         status = json.loads(response.body.decode('utf-8'))
         pprint.pprint(status)
 
+    def do_status(self, arg):
+        """
+        Verify the consistency of all the statuses of the contract
+
+        :param arg: The name of the contract
+        :return:
+        """
+        client = HTTPClient()
+        response = client.fetch('{}/verify?{}'.format(
+            self.server,
+            parse.urlencode({'contract': '{}'.format(arg)})
+        ))
+        status = json.loads(response.body.decode('utf-8'))
+        pprint.pprint(status)
+
     def do_call(self, arg):
         """
         Call function from the contract

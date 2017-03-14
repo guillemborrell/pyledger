@@ -224,6 +224,42 @@ def get_status(name):
     return dill.loads(last_status[0].attributes), correct
 
 
+def verify_contract(name):
+    stored_contract = DB.session.query(
+        Contract).filter(
+            Contract.name == name).one_or_none()
+
+    if not stored_contract:
+        raise ValueError('Contract not found')
+
+    previous_key = None
+
+    for status in DB.session.query(
+        Status).filter(
+            Status.contract == stored_contract
+            ).order_by(Status.when):
+
+        if status.key == b'genesis':
+            previous_key = status.key
+
+        else:
+            m = hashlib.sha256()
+            m.update(previous_key)
+            m.update(status.when.isoformat().encode('utf-8'))
+            m.update(status.attributes)
+
+            if m.digest() == status.key:
+                previous_key = status.key
+
+            else:
+                return "Chain inconsistency from status {} on {}".format(
+                    status.key,
+                    status.when.isoformat()
+                )
+
+    return "Contract OK"
+
+
 def update_status(contract):
     """
     Update the status of the contract in the ledger
