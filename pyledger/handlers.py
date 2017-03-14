@@ -73,11 +73,13 @@ class StatusHandler(tornado.web.RequestHandler):
             self.write('You must specify a contract')
 
         else:
-            status = get_status(contract)
-            if status:
+            status, correct = get_status(contract)
+            if status and correct:
                 self.write(json.dumps(status))
+            elif not correct:
+                self.write('"Status chain broken"')
             else:
-                self.write('"Contract not found"')
+                self.write('"Status not found"')
 
 
 class CallHandler(tornado.web.RequestHandler):

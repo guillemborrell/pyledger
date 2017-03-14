@@ -34,7 +34,7 @@ If you run this snippet as script without options, you will be able to
 connect to this server with the command line client provided by pyledger,
 called ``pyledger-shell``::
 
-    (env) :~$ pyledger-shell
+    (env) $> pyledger-shell
     PyLedger simple client
     (http://localhost:8888)> contracts
          Hello
@@ -85,6 +85,50 @@ attributes and methods that change those attributes. It is also quite similar
 as how Solidity defines the smart contracts, with attributes and
 methods that modify them. Pyledger is a little more explicit.
 
+We can also define methods with arguments, and here's one of the important
+particularities of pyledger: *all the arguments but the first one (attrs)
+must be type annotated*. For instance, this is a contract that greets with a
+name, that is passed as a parameter.
+
+.. code-block:: python
+
+    def hello():
+        def say_hello(attrs, name: str):
+            attrs.counter += 1
+            return attrs, 'Hello {} for time #{}'.format(name, attrs.counter)
+
+        contract = Builder('Hello')
+        contract.add_attribute('counter', 0)
+        contract.add_method(say_hello)
+
+        return contract
+
+
+A smart contract must expose an API, and type annotation is needed to let the
+client and any user of the contract to know which type the arguments must be::
+
+    (env) $> pyledger-shell
+    PyLedger simple client
+    (http://localhost:8888)> api Hello
+       say_hello ( name [str] )
+
+    (http://localhost:8888)> call Hello say_hello Guillem
+    Hello Guillem for time #1
+    (http://localhost:8888)> call Hello say_hello Guillem
+    Hello Guillem for time #2
+    (http://localhost:8888)> status Hello
+    {'counter': 2}
+    (http://localhost:8888)>
+
+
+With these features, the smart contracts can be as complex as needed. One can
+store information of any kind within the arguments, that are the ones that
+define the status of the contract.
+
+.. important::
+
+    If you want the contract to be fast and you want to avoid obscure bugs
+    too, keep your attributes as primitive python types.
 
 Docstrings of the classes cited in this section
 -----------------------------------------------

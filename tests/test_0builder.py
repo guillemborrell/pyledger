@@ -123,7 +123,7 @@ def test_7get_api():
 
 def test_8get_status():
     status = get_status('NewContract')
-    assert status == {'accounts': {'My_account': 100.0}}
+    assert status == ({'accounts': {'My_account': 100.0}}, True)
         
         
 if __name__ == '__main__':

@@ -205,9 +205,23 @@ def get_status(name):
     last_status = DB.session.query(
         Status).filter(
             Status.contract == stored_contract
-        ).order_by(desc(Status.when)).first()
+        ).order_by(desc(Status.when)).limit(2).all()
 
-    return dill.loads(last_status.attributes)
+    # Verification step
+    m = hashlib.sha256()
+    m.update(last_status[1].key)
+    m.update(last_status[0].when.isoformat().encode('utf-8'))
+    m.update(last_status[0].attributes)
+
+    # Assert the correctness of the step
+    if m.digest() == last_status[0].key:
+        correct = True
+    else:
+        correct = False
+
+    print(correct)
+
+    return dill.loads(last_status[0].attributes), correct
 
 
 def update_status(contract):
