@@ -28,7 +28,7 @@ of this *status chain* with one of the previous examples::
     Hello Guillem for time #1
     (http://localhost:8888)> call Hello say_hello Guillem
     Hello Guillem for time #2
-        (http://localhost:8888)> call Hello say_hello Guillem
+    (http://localhost:8888)> call Hello say_hello Guillem
     Hello Guillem for time #3
     (http://localhost:8888)> status Hello
     {'counter': 3}
