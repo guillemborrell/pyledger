@@ -20,6 +20,7 @@ from pyledger.db import DB, Contract, Status
 from datetime import datetime
 import hashlib
 import inspect
+import base64
 
 
 try:
@@ -219,9 +220,31 @@ def get_status(name):
     else:
         correct = False
 
-    print(correct)
-
     return dill.loads(last_status[0].attributes), correct
+
+
+def get_contract_data(name):
+    stored_contract = DB.session.query(
+        Contract).filter(
+            Contract.name == name).one_or_none()
+
+    if not stored_contract:
+        raise ValueError('Contract {} not found'.format(name))
+
+    statuses = []
+
+    for status in DB.session.query(
+        Status).filter(
+            Status.contract == stored_contract
+            ).order_by(Status.when):
+                statuses.append({
+                    'hash': base64.b64encode(status.key).decode('utf-8'),
+                    'when': status.when.isoformat(),
+                    'attributes': base64.b64encode(status.attributes).decode(
+                        'utf-8')
+                })
+
+    return statuses
 
 
 def verify_contract(name):
@@ -233,6 +256,8 @@ def verify_contract(name):
         raise ValueError('Contract not found')
 
     previous_key = None
+
+    inconsistencies = []
 
     for status in DB.session.query(
         Status).filter(
@@ -252,12 +277,17 @@ def verify_contract(name):
                 previous_key = status.key
 
             else:
-                return "Chain inconsistency from status {} on {}".format(
+                inconsistencies.append("Chain inconsistency in status {} on "
+                                        "{}".format(
                     status.key,
                     status.when.isoformat()
+                    )
                 )
 
-    return "Contract OK"
+    if inconsistencies:
+        return inconsistencies
+    else:
+        return "Contract OK"
 
 
 def update_status(contract):

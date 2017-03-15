@@ -15,5 +15,5 @@ def test_10break_chain():
     status.key = b'x'
     DB.session.commit()
 
-    assert verify_contract('NewContract')[:10] == "Chain inco"
+    assert verify_contract('NewContract')[0][:20] == "Chain inconsistency "
 

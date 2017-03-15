@@ -15,7 +15,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyledger.contract import ls_contracts, get_api, get_contract, \
-    commit_contract, update_status, get_status, verify_contract
+    commit_contract, update_status, get_status, verify_contract, \
+    get_contract_data
 from pyledger.config import args
 from pyledger.db import DB, User
 from datetime import datetime
@@ -69,17 +70,25 @@ class APIHandler(tornado.web.RequestHandler):
 class StatusHandler(tornado.web.RequestHandler):
     def get(self):
         contract = self.get_argument('contract', default=None)
+        dump = self.get_argument('data', default=None)
+
         if contract is None:
             self.write('"You must specify a contract"')
 
         else:
-            status, correct = get_status(contract)
-            if status and correct:
-                self.write(json.dumps(status))
-            elif not correct:
-                self.write('"Status chain broken"')
+            if dump is None:
+                status, correct = get_status(contract)
+                if status and correct:
+                    self.write(json.dumps(status))
+                elif not correct:
+                    self.write('"Status chain broken"')
+                else:
+                    self.write('"Status not found"')
+
             else:
-                self.write('"Status not found"')
+                self.write(json.dumps(
+                    get_contract_data(contract)
+                ))
 
 
 class VerifyHandler(tornado.web.RequestHandler):

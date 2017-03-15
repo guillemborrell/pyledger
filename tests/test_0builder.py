@@ -16,8 +16,9 @@
 
 import pytest
 from pyledger.contract import Builder, commit_contract, ls_contracts, get_contract, \
-    update_status, get_api, get_status, verify_contract
+    update_status, get_api, get_status, verify_contract, get_contract_data
 from pyledger.db import DB
+import base64
 
 # Create the tables for the tests.
 DB.sync_tables()
@@ -124,6 +125,12 @@ def test_7get_api():
 def test_8get_status():
     status = get_status('NewContract')
     assert status == ({'accounts': {'My_account': 100.0}}, True)
+
+
+def test_8get_data():
+    data = get_contract_data('NewContract')
+    assert len(data) == 2
+    assert base64.b64decode(data[0]['hash']) == b'genesis'
 
 
 def test_9verify():

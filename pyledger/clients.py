@@ -97,16 +97,43 @@ class REPL(cmd.Cmd):
         """
         Check the contract current status of the attributes
 
-        :param arg: The name of the contract
-        :return:
+        Usage.
+
+        Get the last status of the contract and check its consistency::
+
+            ()> status ContractName
+
+        Dump all the statuses of the contract to a given file::
+
+            ()> status ContractName dump /file/path
+
         """
         client = HTTPClient()
+        if ' ' not in arg:
+            query_args = {'contract': '{}'.format(arg)}
+            dump = False
+
+        elif len(arg.split()) == 3:
+            args = arg.split()
+            query_args = {'contract': '{}'.format(args[0]),
+                          'data': True}
+            dump = True
+        else:
+            print('Command could not be parsed')
+            return
+
         response = client.fetch('{}/status?{}'.format(
             self.server,
-            parse.urlencode({'contract': '{}'.format(arg)})
+            parse.urlencode(query_args)
         ))
-        status = json.loads(response.body.decode('utf-8'))
-        pprint.pprint(status)
+
+        if dump:
+            print('Contract data dump at', args[2])
+            with open(args[2], 'wb') as f:
+                f.write(response.body)
+        else:
+            status = json.loads(response.body.decode('utf-8'))
+            pprint.pprint(status)
 
     def do_verify(self, arg):
         """
@@ -162,3 +189,5 @@ class REPL(cmd.Cmd):
 
 def run_repl():
     REPL().cmdloop()
+
+

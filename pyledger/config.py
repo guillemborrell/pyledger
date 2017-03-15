@@ -34,6 +34,12 @@ elif 'pydevconsole' in sys.argv[0]:
     args = argstype(db='sqlite://', debug=False, sync=False, port=8888,
                     test=False)
 
+elif 'pyledger-verify' in sys.argv[0]:
+    pass
+
+elif 'pyledger-shell' in sys.argv[0]:
+    pass
+
 else:
     parser = argparse.ArgumentParser(description='Run the PyLedger server')
     parser.add_argument('--db', help="SQLAlchemy database address",
