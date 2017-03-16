@@ -83,3 +83,31 @@ utility *pyledger-verify*::
     DONE
 
 where every dot is one successfully verified step.
+
+If you tamper with this file, or the database that stores the information,
+even changing a single bit, the status chain will inform you of the
+inconsistency giving its timestamp.
+
+.. code-block:: python
+   :emphasize-lines: 4
+
+    [{'attributes': 'gAN9cQBYBwAAAGNvdW50ZXJxAUsAcy4=',
+      'hash': 'Z2VuZXNpcw==',
+      'when': '2017-03-15T18:24:27.523828'},
+     {'attributes': 'gAN9cQBYBwAABGNvdW50ZXJxAUsBcy4=',
+      'hash': 'eRs+YxhvKIyUdl++TQZ5sCcMDE0aoaNKn1swFQ44bMM=',
+      'when': '2017-03-15T18:24:38.846864'},
+     {'attributes': 'gAN9cQBYBwAAAGNvdW50ZXJxAUsCcy4=',
+      'hash': 'ZGELWR6y7n+hneBbR+8x9PwaRpBi3Bi0CI/T+9J7ccY=',
+      'when': '2017-03-15T18:24:39.580593'},
+     {'attributes': 'gAN9cQBYBwAAAGNvdW50ZXJxAUsDcy4=',
+      'hash': '7B+OH/4xxJz6J6NOixl32F1vXrWZFNQKMR7pe/HO7gY=',
+      'when': '2017-03-15T18:24:39.925244'}]
+
+
+This is the output of the pyledger-verify tool with the manipulated file::
+
+    $> pyledger-verify --data hello-ledger.json
+     Inconsistency 2017-03-15T18:24:38.846864..
+    DONE
+

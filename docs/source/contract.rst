@@ -53,6 +53,9 @@ modifies no attributes, but it must get the attributes as an argument and
 return them anyways.  If an additional argument, like the ``Hello`` string,
 is returned by the method, it is given as a second return argument.
 
+Attributes
+----------
+
 Let's change the previous example a little by adding an attribute to the
 contract. For instance, we will make a counter of the amount of times the
 contract has greeted us.
@@ -129,6 +132,47 @@ define the status of the contract.
 
     If you want the contract to be fast and you want to avoid obscure bugs
     too, keep your attributes as primitive python types.
+
+
+Exceptions
+----------
+
+Contracts can raise only a generic exception of type :py:class:`Exception`.
+The goal is only to inform the user that the operation has not been
+successful. Note that the methods that return no additional value send back
+to the client the string *SUCCESS*. This means that the client is always
+waiting for a message to come.
+
+We will introduce some very simple exception that checks the most common
+mispelling of my name
+
+.. code-block:: python
+
+    def hello():
+        def say_hello(attrs, name: str):
+            if name == 'Guillen':
+                raise Exception('You probably mispelled Guillem')
+
+            attrs.counter += 1
+            return attrs, 'Hello {} for time #{}'.format(name, attrs.counter)
+
+        contract = Builder('Hello')
+        contract.add_attribute('counter', 0)
+        contract.add_method(say_hello)
+
+        return contract
+
+And how the exception is handled at the client side::
+
+    (env) $> pyledger-shell
+    PyLedger simple client
+    (http://localhost:8888)> call Hello say_hello Guillem
+    Hello Guillem for time #1
+    (http://localhost:8888)> call Hello say_hello Guillen
+    You probably mispelled Guillem
+    (http://localhost:8888)> call Hello say_hello Guillem
+    Hello Guillem for time #2
+
 
 Docstrings of the classes cited in this section
 -----------------------------------------------
