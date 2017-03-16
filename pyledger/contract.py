@@ -31,10 +31,15 @@ except ImportError:
 
 
 class Attrs:
+    temporary_attributes = ['user']
+
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 
     def get_attributes(self):
+        for attr in self.temporary_attributes:
+            if 'attr' in self.__dict__:
+                del self.__dict__[attr]
         return self.__dict__
 
     def __repr__(self):
@@ -141,20 +146,23 @@ class Builder:
 
 
 class Manager:
-    def __init__(self, name, contract):
+    def __init__(self, name, contract, user=None):
         status = Status.query().filter(Status.contract == contract).order_by(
             desc(Status.when)).first()
         self.name = name
         self.methods = dill.loads(contract.methods)
         self.attributes = dill.loads(status.attributes)
         self.api = dill.loads(contract.api)
+        self.user = user
 
     def call(self, function: str, **kwargs):
         """
         Call the function of the smart contract passing the keyword arguments.
         """
-        # Build named tuple with the properies
+        # Build named tuple with the properties
         attrs = Attrs(**self.attributes)
+        if self.user:
+            attrs.user = self.user
 
         signature = inspect.signature(self.methods[function])
         call_args = {'attrs': attrs}
@@ -224,7 +232,7 @@ def ls_contracts():
         yield contract.name
 
 
-def get_contract(name):
+def get_contract(name, user=None):
     """
     Get the contract and the current status.
     """
@@ -233,7 +241,7 @@ def get_contract(name):
     if not stored_contract:
         raise ValueError('Contract not found')
 
-    contract = Manager(name, stored_contract)
+    contract = Manager(name, stored_contract, user)
 
     return contract
 

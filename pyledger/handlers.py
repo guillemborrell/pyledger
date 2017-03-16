@@ -160,7 +160,13 @@ class CallHandler(tornado.web.RequestHandler):
                 elif api[arg] == 'str':
                     arguments[arg] = arguments[arg][0].decode('utf-8')
 
-        contract = get_contract(name)
+        if 'X-User' in self.request.headers:
+            user = DB.session.query(User).filter(
+                User.key == self.request.headers['X-User']).one_or_none()
+        else:
+            user = None
+
+        contract = get_contract(name, user)
 
         try:
             print('Calling', function, 'With args', arguments)
