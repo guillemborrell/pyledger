@@ -63,9 +63,11 @@ class REPL(cmd.Cmd):
 
     def do_key(self, arg):
         """
-        Request a user key
+        Request a user key::
 
-          ()> key name_of_user
+            ()> key name_of_user
+
+        Prints the key of the new user.
         """
         response = self.request('/new_user', name=arg)
         print(response.body.decode('utf-8'))
