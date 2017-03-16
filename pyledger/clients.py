@@ -35,6 +35,7 @@ class REPL(cmd.Cmd):
     intro = 'PyLedger simple client'
     server = args.server
     prompt = '({})> '.format(args.server)
+    client = HTTPClient()
 
     def do_exit(self, arg):
         """
@@ -47,8 +48,7 @@ class REPL(cmd.Cmd):
 
     def do_key(self, arg):
         """Request a user key"""
-        client = HTTPClient()
-        response = client.fetch('{}/new_user'.format(
+        response = self.client.fetch('{}/new_user'.format(
             self.server
         ))
         print(response.body.decode('utf-8'))
@@ -60,8 +60,7 @@ class REPL(cmd.Cmd):
         :param arg:
         :return:
         """
-        client = HTTPClient()
-        response = client.fetch('{}/contracts'.format(
+        response = self.client.fetch('{}/contracts'.format(
             self.server
         ))
         contracts = json.loads(response.body.decode('utf-8'))
@@ -75,8 +74,7 @@ class REPL(cmd.Cmd):
         :param arg: The name of the contract
         :return:
         """
-        client = HTTPClient()
-        response = client.fetch('{}/api?{}'.format(
+        response = self.client.fetch('{}/api?{}'.format(
             self.server,
             parse.urlencode({'contract': '{}'.format(arg)})
         ))
@@ -108,7 +106,6 @@ class REPL(cmd.Cmd):
             ()> status ContractName dump /file/path
 
         """
-        client = HTTPClient()
         if ' ' not in arg:
             query_args = {'contract': '{}'.format(arg)}
             dump = False
@@ -122,7 +119,7 @@ class REPL(cmd.Cmd):
             print('Command could not be parsed')
             return
 
-        response = client.fetch('{}/status?{}'.format(
+        response = self.client.fetch('{}/status?{}'.format(
             self.server,
             parse.urlencode(query_args)
         ))
@@ -142,8 +139,7 @@ class REPL(cmd.Cmd):
         :param arg: The name of the contract
         :return:
         """
-        client = HTTPClient()
-        response = client.fetch('{}/verify?{}'.format(
+        response = self.client.fetch('{}/verify?{}'.format(
             self.server,
             parse.urlencode({'contract': '{}'.format(arg)})
         ))
@@ -157,8 +153,8 @@ class REPL(cmd.Cmd):
         call contract function argument1 argument2 argument3 ...
         """
         contract, function, *arguments = arg.split()
-        client = HTTPClient()
-        response = client.fetch('{}/api?{}'.format(
+
+        response = self.client.fetch('{}/api?{}'.format(
             self.server,
             parse.urlencode({'contract': '{}'.format(contract)})
         ))
@@ -179,7 +175,7 @@ class REPL(cmd.Cmd):
                      'function': function}
         call_dict.update(call_args)
 
-        response = client.fetch('{}/call?{}'.format(
+        response = self.client.fetch('{}/call?{}'.format(
             self.server,
             parse.urlencode(call_dict)
         ))
