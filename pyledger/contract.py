@@ -318,11 +318,10 @@ def verify_contract(name):
 
             else:
                 inconsistencies.append("Chain inconsistency in status {} on "
-                                        "{}".format(
-                    status.key,
-                    status.when.isoformat()
-                    )
-                )
+                                       "{}".format(status.key,
+                                                   status.when.isoformat()
+                                                   )
+                                       )
 
     if inconsistencies:
         return inconsistencies

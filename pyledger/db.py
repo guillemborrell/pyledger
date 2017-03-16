@@ -18,7 +18,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
-    LargeBinary, desc
+    LargeBinary
 from sqlalchemy.orm import relationship
 from pyledger.config import args
 
