@@ -50,7 +50,7 @@ class TestApp(AsyncHTTPTestCase):
     def test_01get_user_key(self):
         response = self.fetch('/new_user')
         self.assertEqual(response.code, 200)
-        self.assertEqual(len(response.body), 36)
+        self.assertEqual(response.body, b'Not authorized')
 
     def test_02get_api(self):
         response = self.fetch('/api?{}'.format(

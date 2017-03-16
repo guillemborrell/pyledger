@@ -50,9 +50,11 @@ class MainHandler(tornado.web.RequestHandler):
         
 class NewUserHandler(tornado.web.RequestHandler):
     def get(self):
-        user = DB.session.query(User).filter(
-            User.key == self.request.headers['X-User']
-        ).one_or_none()
+        if 'X-User' in self.request.headers:
+            user = DB.session.query(User).filter(
+                User.key == self.request.headers['X-User']).one_or_none()
+        else:
+            user = None
 
         if user and user.name == 'admin':
             new_user = User()
