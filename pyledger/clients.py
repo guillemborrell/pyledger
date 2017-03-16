@@ -29,13 +29,27 @@ class REPL(cmd.Cmd):
                         help='Url of the ledger server',
                         type=str,
                         default='http://localhost:8888')
+    parser.add_argument('--user',
+                        help='User key',
+                        type=str,
+                        default='')
 
     args = parser.parse_args()
+
+    user_key = ''
+    if args.user:
+        user_key = args.user
 
     intro = 'PyLedger simple client'
     server = args.server
     prompt = '({})> '.format(args.server)
     client = HTTPClient()
+
+    def request(self, url, **args):
+        return self.client.fetch('{}{}?{}'.format(self.server,
+                                                  url,
+                                                  parse.urlencode(args)),
+                                 headers={'X-User': self.user_key})
 
     def do_exit(self, arg):
         """
@@ -44,13 +58,12 @@ class REPL(cmd.Cmd):
         :param arg:
         :return:
         """
+        self.client.close()
         sys.exit(0)
 
     def do_key(self, arg):
         """Request a user key"""
-        response = self.client.fetch('{}/new_user'.format(
-            self.server
-        ))
+        response = self.request('/new_user')
         print(response.body.decode('utf-8'))
 
     def do_contracts(self, arg):
@@ -60,9 +73,7 @@ class REPL(cmd.Cmd):
         :param arg:
         :return:
         """
-        response = self.client.fetch('{}/contracts'.format(
-            self.server
-        ))
+        response = self.request('/contracts')
         contracts = json.loads(response.body.decode('utf-8'))
         for c in contracts:
             print('    ', c)
@@ -74,10 +85,9 @@ class REPL(cmd.Cmd):
         :param arg: The name of the contract
         :return:
         """
-        response = self.client.fetch('{}/api?{}'.format(
-            self.server,
-            parse.urlencode({'contract': '{}'.format(arg)})
-        ))
+
+        response = self.request('/api', contract=arg)
+
         api = json.loads(response.body.decode('utf-8'))
         if type(api) == str:
             print("Contract not found")
