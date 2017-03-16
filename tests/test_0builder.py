@@ -61,7 +61,8 @@ def test_2builder():
     contract.add_method(add_account)
     contract.add_method(increment)
 
-    assert sorted([k for k in contract.api()[1].keys()]) == ['add_account', 'increment']
+    assert sorted([k for k in contract._api()[1].keys()]) == ['add_account',
+                                                              'increment']
 
 
 def test_3call():
@@ -78,7 +79,7 @@ def test_3call():
     contract.add_attribute('accounts', {})
     contract.add_method(add_account)
     contract.add_method(increment)
-    assert contract.call('add_account', key='My_account') == b'SUCCESS'
+    assert contract._call('add_account', key='My_account') == b'SUCCESS'
     
 
 def test_4commit():

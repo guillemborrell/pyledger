@@ -90,9 +90,11 @@ class Builder:
                 
         self.methods[name] = method
 
-    def call(self, function: str, **kwargs):
+    def _call(self, function: str, **kwargs):
         """
         Call the function of the smart contract passing the keyword arguments.
+
+        Just for testing that the builder builds the contract properly.
         """
         # Build named tuple with the properies
         attrs = Attrs(**self.attributes)
@@ -102,7 +104,7 @@ class Builder:
 
         if function not in self.methods:
             return 'Function not found'
-        
+
         for k, v in kwargs.items():
             if k in signature.parameters:
                 # Improve type checking here
@@ -117,12 +119,12 @@ class Builder:
             else:
                 return_value = b'SUCCESS'
                 self.attributes = attrs.get_attributes()
-            
+
             return return_value
         except Exception as e:
             return str(e)
 
-    def api(self):
+    def _api(self):
         """
         Return a dictionary with the complete API for the contract
         """
@@ -138,6 +140,54 @@ class Builder:
         return self.name, api_spec
 
 
+class Manager:
+    def __init__(self, name, contract):
+        status = Status.query().filter(Status.contract == contract).order_by(
+            desc(Status.when)).first()
+        self.name = name
+        self.methods = dill.loads(contract.methods)
+        self.attributes = dill.loads(status.attributes)
+        self.api = dill.loads(contract.api)
+
+    def call(self, function: str, **kwargs):
+        """
+        Call the function of the smart contract passing the keyword arguments.
+        """
+        # Build named tuple with the properies
+        attrs = Attrs(**self.attributes)
+
+        signature = inspect.signature(self.methods[function])
+        call_args = {'attrs': attrs}
+
+        if function not in self.methods:
+            return 'Function not found'
+
+        for k, v in kwargs.items():
+            if k in signature.parameters:
+                # Improve type checking here
+                call_args[k] = v
+
+        try:
+            attrs = self.methods[function](**call_args)
+
+            if type(attrs) == tuple:
+                return_value = attrs[1].encode('utf-8')
+                self.attributes = attrs[0].get_attributes()
+            else:
+                return_value = b'SUCCESS'
+                self.attributes = attrs.get_attributes()
+
+            return return_value
+        except Exception as e:
+            return str(e)
+
+    def api(self):
+        """
+        Return a dictionary with the complete API for the contract
+        """
+        return self.name, self.api
+
+
 def commit_contract(contract):
     """
     Commits the contract to the ledger
@@ -147,7 +197,7 @@ def commit_contract(contract):
     stored_contract.created = datetime.now()
     stored_contract.description = contract.description
     stored_contract.methods = dill.dumps(contract.methods)
-    stored_contract.api = dill.dumps(contract.api()[1])
+    stored_contract.api = dill.dumps(contract._api()[1])
 
     signatures = {}
     for k, method in contract.methods.items():
@@ -170,7 +220,7 @@ def ls_contracts():
     """
     Get the name of all the contracts returns an iterator
     """
-    for contract in DB.session.query(Contract).order_by(Contract.created):
+    for contract in Contract.query().order_by(Contract.created):
         yield contract.name
 
 
@@ -178,33 +228,24 @@ def get_contract(name):
     """
     Get the contract and the current status.
     """
-    stored_contract = DB.session.query(Contract).filter(Contract.name == name).first()
+    stored_contract = Contract.query().filter(Contract.name == name).first()
 
     if not stored_contract:
         raise ValueError('Contract not found')
 
-    last_status = DB.session.query(
-        Status).filter(
-            Status.contract == stored_contract
-        ).order_by(desc(Status.when)).first()
-    
-    contract = Builder(name)
-    contract.methods = dill.loads(stored_contract.methods)
-    contract.attributes = dill.loads(last_status.attributes)
+    contract = Manager(name, stored_contract)
 
     return contract
 
 
 def get_status(name):
-    stored_contract = DB.session.query(
-        Contract).filter(
+    stored_contract = Contract.query().filter(
             Contract.name == name).one_or_none()
 
     if not stored_contract:
         raise ValueError('Contract not found')
 
-    last_status = DB.session.query(
-        Status).filter(
+    last_status = Status.query().filter(
             Status.contract == stored_contract
         ).order_by(desc(Status.when)).limit(2).all()
 
@@ -224,8 +265,7 @@ def get_status(name):
 
 
 def get_contract_data(name):
-    stored_contract = DB.session.query(
-        Contract).filter(
+    stored_contract = Contract.query().filter(
             Contract.name == name).one_or_none()
 
     if not stored_contract:

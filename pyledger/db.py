@@ -17,12 +17,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, LargeBinary
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
+    LargeBinary, desc
 from sqlalchemy.orm import relationship
 from pyledger.config import args
 
 
-class Handler():
+class Handler:
     def __init__(self):
         self.engine = create_engine(args.db, echo=args.debug)
         self.session = scoped_session(sessionmaker(bind=self.engine))
@@ -47,9 +48,13 @@ class Contract(Model):
     methods = Column(LargeBinary)
     api = Column(LargeBinary)
     signatures = Column(LargeBinary)
-    status = relationship("Status", back_populates="contract")
+    status = relationship("Status", lazy="subquery")
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="contracts")
+
+    @classmethod
+    def query(cls):
+        return DB.session.query(cls)
 
 
 class Status(Model):
@@ -64,6 +69,10 @@ class Status(Model):
 
     def __repr__(self):
         return '<Status key: {}>'.format(self.key)
+
+    @classmethod
+    def query(cls):
+        return DB.session.query(cls)
 
 
 class User(Model):
