@@ -62,8 +62,12 @@ class REPL(cmd.Cmd):
         sys.exit(0)
 
     def do_key(self, arg):
-        """Request a user key"""
-        response = self.request('/new_user')
+        """
+        Request a user key
+
+          ()> key name_of_user
+        """
+        response = self.request('/new_user', name=arg)
         print(response.body.decode('utf-8'))
 
     def do_contracts(self, arg):

@@ -78,6 +78,7 @@ class Status(Model):
 class User(Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
     when = Column(DateTime)
     info = Column(LargeBinary)
     key = Column(String)
