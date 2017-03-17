@@ -86,3 +86,8 @@ class User(Model):
 
     def __repr__(self):
         return '<User key: {}>'.format(self.key)
+
+
+    @classmethod
+    def query(cls):
+        return DB.session.query(cls)
