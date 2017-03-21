@@ -169,11 +169,7 @@ class REPL(cmd.Cmd):
         call contract function argument1 argument2 argument3 ...
         """
         contract, function, *arguments = arg.split()
-
-        response = self.client.fetch('{}/api?{}'.format(
-            self.server,
-            parse.urlencode({'contract': '{}'.format(contract)})
-        ))
+        response = self.request('/api', contract=contract)
         api = json.loads(response.body.decode('utf-8'))
 
         if type(api) == str:
@@ -190,11 +186,7 @@ class REPL(cmd.Cmd):
         call_dict = {'contract': contract,
                      'function': function}
         call_dict.update(call_args)
-
-        response = self.client.fetch('{}/call?{}'.format(
-            self.server,
-            parse.urlencode(call_dict)
-        ))
+        response = self.request('/call', **call_dict)
 
         print(response.body.decode('utf-8'))
 

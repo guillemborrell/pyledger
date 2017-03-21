@@ -164,6 +164,7 @@ class CallHandler(tornado.web.RequestHandler):
             user = DB.session.query(User).filter(
                 User.key == self.request.headers['X-User']).one_or_none()
         else:
+            print('Not authenticated')
             user = None
 
         contract = get_contract(name, user)

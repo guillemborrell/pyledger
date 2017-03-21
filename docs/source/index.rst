@@ -140,6 +140,7 @@ Now that we may have your attention, the actual docs.
 
    contract
    chain
+   users
 
 
 Indices and tables

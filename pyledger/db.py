@@ -63,7 +63,7 @@ class Status(Model):
     contract_id = Column(Integer, ForeignKey('contracts.id'))
     contract = relationship("Contract", back_populates="status")
     attributes = Column(LargeBinary)
-    key = Column(LargeBinary)
+    key = Column(LargeBinary, unique=True)  # Crash if there is a key collision.
     when = Column(DateTime)
     owner = Column(String)
 
@@ -85,8 +85,10 @@ class User(Model):
     contracts = relationship("Contract", back_populates="user")
 
     def __repr__(self):
-        return '<User key: {}>'.format(self.key)
+        return '<User {} with key: {}>'.format(self.name, self.key)
 
+    def __str__(self):
+        return '<User {} with key: {}>'.format(self.name, self.key)
 
     @classmethod
     def query(cls):

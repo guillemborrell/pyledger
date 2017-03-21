@@ -40,12 +40,12 @@ def ledger():
 
 class TestApp(AsyncHTTPTestCase):
     def get_app(self):
-        return make_tornado(ledger)
+        return make_tornado()
 
     def test_00get_contracts(self):
         response = self.fetch('/contracts')
         self.assertEqual(response.code, 200)
-        self.assertEqual(response.body, b'["NewContract", "AnotherContract"]')
+        self.assertEqual(response.body, b'["NewContract"]')
 
     def test_01get_user_key(self):
         response = self.fetch('/new_user')

@@ -31,19 +31,47 @@ except ImportError:
 
 
 class Attrs:
-    temporary_attributes = ['user']
-
     def __init__(self, **kwargs):
-        self.__dict__.update(**kwargs)
+        self.__dict__['store'] = kwargs.copy()
+        self.__dict__['attr_keys'] = [k for k in kwargs]
+        self.__dict__['_user'] = None
+
+    def __getattr__(self, name):
+        if name in self.attr_keys:
+            return self.__dict__['store'][name]
+
+        elif name == '_user':
+            return self.__dict__['_user']
+
+        elif name == 'attr_keys':
+            return self.__dict__['attr_keys']
+
+        else:
+            raise AttributeError('Attribute {} not found within {}'.format(
+                name, ','.join(self.attr_keys)))
+
+    def __setattr__(self, name, value):
+        if name in self.attr_keys:
+            self.__dict__['store'][name] = value
+
+        elif name == '_user':
+            self.__dict__['_user'] = value
+
+        else:
+            raise AttributeError('You cannot set new attributes')
+
+    @property
+    def user(self):
+        if self._user:
+            return self._user
+        else:
+            raise Exception('Not authenticated')
 
     def get_attributes(self):
-        for attr in self.temporary_attributes:
-            if 'attr' in self.__dict__:
-                del self.__dict__[attr]
-        return self.__dict__
+        return self.__dict__['store']
 
     def __repr__(self):
-        return 'attrs: ' + str(self.__dict__)
+        return 'Attrs: ' + str(self.attr_keys)
 
 
 class Builder:
@@ -56,7 +84,8 @@ class Builder:
 
         if name:
             if ' ' in name:
-                raise ValueError('The name of the contract should include no spaces')
+                raise ValueError(
+                    'The name of the contract should include no spaces')
             self.name = name
         else:
             self.name = str(uuid4())
@@ -88,7 +117,9 @@ class Builder:
             )
         else:
             for param in sig.parameters:
-                if not param == 'attrs' and sig.parameters[param].annotation == inspect._empty:
+                if not param == 'attrs' and \
+                    sig.parameters[param].annotation == \
+                        inspect._empty:
                     raise ValueError(
                         'Parameter {} without signature'.format(
                             param))
@@ -162,7 +193,9 @@ class Manager:
         # Build named tuple with the properties
         attrs = Attrs(**self.attributes)
         if self.user:
-            attrs.user = self.user
+            attrs._user = self.user
+        else:
+            attrs._user = None
 
         signature = inspect.signature(self.methods[function])
         call_args = {'attrs': attrs}
@@ -194,6 +227,13 @@ class Manager:
         Return a dictionary with the complete API for the contract
         """
         return self.name, self.api
+
+    def is_admin(self, user_key):
+        """
+        Check if the current user is the contract admin
+        :return:
+        """
+        return user_key
 
 
 def commit_contract(contract):
