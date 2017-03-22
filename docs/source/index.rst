@@ -142,6 +142,7 @@ Now that we may have your attention, the actual docs.
    chain
    users
    currency_example
+   distributed
 
 
 Indices and tables
