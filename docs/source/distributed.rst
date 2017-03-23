@@ -13,5 +13,5 @@ a consensus based on the RAFT protocol.
 To integrate rqlite with pyledger you must install the packages
 sqlalchemy_rqlite and pyrqlite, and run pyledger with the following arguments::
 
-    python examples/currency_auth/server.py --db rqlite+pyrqlite://localhost:4001/ --sync --debug
+    python examples/hello/server.py --db rqlite+pyrqlite://localhost:4001 --sync
 

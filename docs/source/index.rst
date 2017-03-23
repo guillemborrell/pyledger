@@ -139,6 +139,7 @@ Now that we may have your attention, the actual docs.
    :caption: Contents:
 
    contract
+   server
    chain
    users
    currency_example

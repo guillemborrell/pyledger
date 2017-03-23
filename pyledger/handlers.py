@@ -184,8 +184,8 @@ def make_tornado(ledger_configuration=None):
     """
     Make a tornado application from the ledger configuration
 
-    :param ledger_configuration:
-    :return:
+    :param ledger_configuration: Function that defines a smart contract configuring
+        the ledger
     """
     if ledger_configuration and args.sync:
         contract = ledger_configuration()
@@ -214,7 +214,7 @@ def make_wsgi(ledger_configuration=None):
     """
     Make a WSGI application from the ledger configuration
 
-    :param ledger_configuration:
-    :return:
+    :param ledger_configuration: Function that defines a smart contract configuring
+        the ledger
     """
     return tornado.wsgi.WSGIAdapter(make_tornado(ledger_configuration))
