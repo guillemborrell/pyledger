@@ -10,35 +10,33 @@ import asyncio
 reader, writer = None, None
 
 
-@asyncio.coroutine
-def stdio(loop=None):
+async def stdio(loop=None):
     if loop is None:
         loop = asyncio.get_event_loop()
 
     reader = asyncio.StreamReader()
     reader_protocol = asyncio.StreamReaderProtocol(reader)
 
-    writer_transport, writer_protocol = yield from loop.connect_write_pipe(FlowControlMixin, os.fdopen(0, 'wb'))
+    writer_transport, writer_protocol = await loop.connect_write_pipe(FlowControlMixin, os.fdopen(0, 'wb'))
     writer = StreamWriter(writer_transport, writer_protocol, None, loop)
 
-    yield from loop.connect_read_pipe(lambda: reader_protocol, sys.stdin)
+    await loop.connect_read_pipe(lambda: reader_protocol, sys.stdin)
 
     return reader, writer
 
 
-@asyncio.coroutine
-def async_input(message):
+async def async_input(message):
     if isinstance(message, str):
         message = message.encode('utf8')
 
     global reader, writer
     if (reader, writer) == (None, None):
-        reader, writer = yield from stdio()
+        reader, writer = await stdio()
 
     writer.write(message)
-    yield from writer.drain()
+    await writer.drain()
 
-    line = yield from reader.readline()
+    line = await reader.readline()
     return line.decode('utf8').replace('\r', '').replace('\n', '')
 
     
@@ -66,7 +64,6 @@ class MyClientProtocol(WebSocketClientProtocol):
 
 
 if __name__ == '__main__':
-
     factory = WebSocketClientFactory(u"ws://127.0.0.1:9000")
     factory.protocol = MyClientProtocol
 
