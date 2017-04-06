@@ -4,7 +4,7 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 
 class MyServerProtocol(WebSocketServerProtocol):
     def onConnect(self, request):
-        print("Client connecting: {0}".format(request.peer))
+        print("Client connecting: {0}".inaformat(request.peer))
 
     def onOpen(self):
         print("WebSocket connection open.")

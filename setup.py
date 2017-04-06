@@ -40,7 +40,7 @@ setup(name='pyledger',
       long_description=long_description,
       author='Guillem Borrell',
       author_email='guillemborrell@gmail.com',
-      packages=['pyledger'],
+      packages=['pyledger', 'pyledger2'],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
@@ -51,7 +51,7 @@ setup(name='pyledger',
           'Programming Language :: Python :: 3.6',
           'License :: OSI Approved :: GNU Affero General Public License v3'
       ],
-      setup_requires=['pytest-runner', 'pytest'],
+      setup_requires=['pytest-runner', 'pytest', 'autobahn', 'protobuf'],
       install_requires=['protobuf>=3.0.0', 'tornado', 'dill', 'sqlalchemy'],
       entry_points={
           'console_scripts': ['pyledger-server=pyledger.server:main',
