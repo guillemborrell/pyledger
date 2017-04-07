@@ -1,10 +1,11 @@
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
+import asyncio
 
 
-class MyServerProtocol(WebSocketServerProtocol):
+class Protocol(WebSocketServerProtocol):
     def onConnect(self, request):
-        print("Client connecting: {0}".inaformat(request.peer))
+        print("Client connecting: {0}".format(request.peer))
 
     def onOpen(self):
         print("WebSocket connection open.")
@@ -22,20 +23,24 @@ class MyServerProtocol(WebSocketServerProtocol):
         print("WebSocket connection closed: {0}".format(reason))
 
 
+def run_server(protocol, address="ws://127.0.0.1:9000"):
+        factory = WebSocketServerFactory(address)
+        factory.protocol = protocol
+        loop = asyncio.get_event_loop()
+        server = loop.create_server(factory,
+                                    '0.0.0.0',
+                                    int(address.split(':')[2])
+                                    )
+        task = loop.run_until_complete(server)
+
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            task.close()
+            loop.close()
+
+
 if __name__ == '__main__':
-    import asyncio
-
-    factory = WebSocketServerFactory(u"ws://127.0.0.1:9000")
-    factory.protocol = MyServerProtocol
-
-    loop = asyncio.get_event_loop()
-    coro = loop.create_server(factory, '0.0.0.0', 9000)
-    server = loop.run_until_complete(coro)
-
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        server.close()
-        loop.close()
+    run_server(Protocol)
