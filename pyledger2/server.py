@@ -19,15 +19,6 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
 import asyncio
 
 
-class Handler:
-    def __init__(self, status, contract):
-        self.status = status
-        self.contract = contract
-
-    def handle_request(self):
-        pass
-
-
 class Protocol(WebSocketServerProtocol):
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
