@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+message ActivationRequest {
+    string client_key = 1;
+}
+
+message ActivationResponse {
+    string auth_key = 1;
+}
+
+message AuthenticationRequest {
+    string user = 1;
+    string hashed_password = 2;
+    string email = 3;
+}
+
+message AuthenticationResponse {
+    bool successful = 1;
+}
+
+message SubscriptionRequest {
+    string client_key = 1;
+    string user = 2;
+    string password = 3;
+}
+
+message SubscriptionResponse {
+    string topic = 1;
+    string session_key = 2;
+}
+
+message PyledgerRequest {
+    string call = 1;
+    string client_key = 2;
+    string session_key = 3;
+    bytes request = 4;
+}
+
+message PyledgerResponse {
+    string topic = 1;
+    float timestamp = 2;
+    bytes response = 3;
+}
