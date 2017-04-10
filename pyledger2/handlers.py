@@ -14,14 +14,6 @@ def check_permissions(key):
     pass
 
 
-class AuthenticationResponse(Enum):
-    AUTHENTICATED = auto()
-    NOT_AUTHENTICATED = auto()
-    SESSION_EXPIRED = auto()
-    BANNED_USER = auto()
-    INVALID = auto()
-
-
 class Handler:
     def __init__(self):
         self.methods = []
@@ -43,6 +35,12 @@ class Handler:
         pass
 
     def key(self, message: PyledgerRequest) -> PyledgerResponse:
+        """
+        Get authentication key
+
+        :param message:
+        :return:
+        """
         pass
 
     def echo(self, message: PyledgerRequest) -> PyledgerResponse:

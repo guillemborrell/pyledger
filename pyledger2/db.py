@@ -14,12 +14,18 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyledger2.config import password_backend, SECRET
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.exceptions import InvalidKey
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
     LargeBinary
 from sqlalchemy.orm import relationship
+
 from pyledger.config import args
 import base64
 
@@ -98,6 +104,23 @@ class User(Model):
 
     def get_password(self):
         return base64.b64decode(self.password)
+
+    def is_password(self, password):
+        kpdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=SECRET,
+            iterations=1000000,
+            backend=password_backend
+        )
+        try:
+            kpdf.verify(password.encode('utf-8'), self.get_password())
+            correct = True
+        except InvalidKey as e:
+            print(e)
+            correct = False
+
+        return correct
 
     @classmethod
     def query(cls):
