@@ -21,6 +21,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
     LargeBinary
 from sqlalchemy.orm import relationship
 from pyledger.config import args
+import base64
 
 
 class Handler:
@@ -82,7 +83,9 @@ class User(Model):
     when = Column(DateTime)
     info = Column(LargeBinary)
     key = Column(String)
+    password = Column(String)
     contracts = relationship("Contract", back_populates="user")
+    sessions = relationship("Session", back_populates='user')
 
     def __repr__(self):
         return '<User {} with key: {}>'.format(self.name, self.key)
@@ -90,6 +93,30 @@ class User(Model):
     def __str__(self):
         return '<User {} with key: {}>'.format(self.name, self.key)
 
+    def set_password(self, password):
+        self.password = base64.b64encode(password)
+
+    def get_password(self):
+        return base64.b64decode(self.password)
+
     @classmethod
     def query(cls):
         return DB.session.query(cls)
+
+
+class Session(Model):
+    __tablename__ = 'sessions'
+    id = Column(Integer, primary_key=True)
+    key = Column(String, unique=True)
+    registered = Column(DateTime)
+    until = Column(DateTime)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="sessions")
+
+    def __repr__(self):
+        return 'Session {}'.format(self.key)
+
+    @classmethod
+    def query(cls):
+        return DB.session.query(cls)
+

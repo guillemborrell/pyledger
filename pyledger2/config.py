@@ -17,7 +17,9 @@
 import sys
 import argparse
 from collections import namedtuple
+from cryptography.hazmat.backends import default_backend
 
+# USER CONFIGURATION AT THE END OF THE FILE #
 
 if len(sys.argv) > 2 and 'test' in sys.argv[2]:
     argstype = namedtuple('Arguments', ['db', 'debug', 'sync', 'port', 'test'])
@@ -49,3 +51,11 @@ else:
     parser.add_argument('--port', type=int, default=8888)
     parser.add_argument('--test', action='store_true', default=False)
     args = parser.parse_args()
+
+
+password_backend = default_backend()
+
+# User configurable section
+
+# - Put a very secret word here
+SECRET = b'test'

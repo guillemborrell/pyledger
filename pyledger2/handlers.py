@@ -1,6 +1,25 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 from google.protobuf.message import DecodeError
 import inspect
+from enum import Enum, auto
+
+
+class Permissions(Enum):
+    MASTER = auto()
+    USER = auto()
+    ANON = auto()
+
+
+def check_permissions(key):
+    pass
+
+
+class AuthenticationResponse(Enum):
+    AUTHENTICATED = auto()
+    NOT_AUTHENTICATED = auto()
+    SESSION_EXPIRED = auto()
+    BANNED_USER = auto()
+    INVALID = auto()
 
 
 class Handler:
@@ -8,31 +27,44 @@ class Handler:
         self.methods = []
         self.attributes = None
 
-    def activation(self, message):
+    def activation(self, message: PyledgerRequest) -> PyledgerResponse:
+        """
+        Request for activation key
+
+        :param message:
+        :return:
+        """
         pass
 
-    def authentication(self, message):
+    def authentication(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
-    def api(self, message):
+    def api(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
-    def key(self, message):
+    def key(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
-    def echo(self, message):
+    def echo(self, message: PyledgerRequest) -> PyledgerResponse:
+        """
+        An echo handler for testing authentication and authorization.
+
+        :param message: Request from the client
+        :return:
+        """
+
+        permissions = check_permissions(message.session_key)
+
+    def contracts(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
-    def contracts(self, message):
+    def status(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
-    def status(self, message):
+    def verify(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
-    def verify(self, message):
-        pass
-
-    def call(self, message):
+    def call(self, message: PyledgerRequest) -> PyledgerResponse:
         pass
 
 
@@ -51,18 +83,17 @@ def handle_request(payload):
     except DecodeError:
         response.successful = False
         response.data = 'Message not properly formatted'.encode('utf-8')
-        return response
+        return response.SerializeToString()
 
     if message.request not in handler_methods(handler):
         response.successful = False
         response.data = 'Request type not available'.encode('utf-8')
-        return response
+        return response.SerializeToString()
 
-    if message.request == 'activation':
-        response.successful = True
-        response.data = 'This is a stub'
-        return response
+    else:
+        # Select the function from the handler
+        successful, response = getattr(handler, message.request)(message)
+        response.successful = successful
+        response.response = response
+        return response.SerializeToString()
 
-
-def serialize_for_testing(response):
-    return response.SerializeToString()
