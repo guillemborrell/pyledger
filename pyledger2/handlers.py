@@ -53,8 +53,7 @@ class Handler:
         :param message: Request from the client
         :return:
         """
-
-        permissions = check_permissions(message.session_key)
+        pass
 
     def contracts(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         pass
@@ -99,7 +98,7 @@ def handle_request(payload):
 
             if not user.check_password(message.password):
                 response.successful = False
-                response.data = b'Wrong user and or password'
+                response.data = b'Wrong user and/or password'
                 return response.SerializeToString()
 
             if user.get_permissions().value > permission_required.value:
@@ -108,7 +107,6 @@ def handle_request(payload):
                 return response.SerializeToString()
 
         # Select the function from the handler
-        print('Calling', message.request)
         try:
             successful, result = getattr(handler, message.request)(message)
         except Exception as exc:
