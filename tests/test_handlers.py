@@ -20,8 +20,8 @@ from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 
 def test_handler_methods():
     assert set(handler_methods(Handler())) == {
-        '__init__', 'activation', 'authentication', 'api', 'key', 'echo',
-        'contracts', 'verify', 'call', 'status'
+        '__init__', 'authentication', 'api', 'session', 'echo',
+        'contracts', 'verify', 'call', 'status', 'new_user', 'set_password'
     }
 
 

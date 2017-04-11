@@ -59,3 +59,6 @@ password_backend = default_backend()
 
 # - Put a very secret word here
 SECRET = b'test'
+
+# - Lifetime of the sessions in hours
+LIFETIME = 1

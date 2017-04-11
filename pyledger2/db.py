@@ -27,6 +27,8 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
 from sqlalchemy.orm import relationship
 
 from pyledger.config import args
+
+from enum import Enum, auto
 import base64
 
 
@@ -43,7 +45,12 @@ class Handler:
 DB = Handler()
 Model = DB.Model
 
+
 # Now the models
+class Permissions(Enum):
+    ROOT = 1
+    USER = 2
+    ANON = 3
 
 
 class Contract(Model):
@@ -90,6 +97,7 @@ class User(Model):
     info = Column(LargeBinary)
     key = Column(String)
     password = Column(String)
+    profile = Column(Integer)
     contracts = relationship("Contract", back_populates="user")
     sessions = relationship("Session", back_populates='user')
 
@@ -105,7 +113,7 @@ class User(Model):
     def get_password(self):
         return base64.b64decode(self.password)
 
-    def is_password(self, password):
+    def check_password(self, password):
         kpdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
@@ -126,6 +134,16 @@ class User(Model):
     def query(cls):
         return DB.session.query(cls)
 
+    @staticmethod
+    def from_name(name):
+        return User.query().filter(User.name == name).one_or_none()
+
+    def get_permissions(self):
+        return Permissions(self.profile)
+
+    def set_permissions(self, permissions):
+        self.profile = permissions.value
+
 
 class Session(Model):
     __tablename__ = 'sessions'
@@ -142,4 +160,5 @@ class Session(Model):
     @classmethod
     def query(cls):
         return DB.session.query(cls)
+
 
