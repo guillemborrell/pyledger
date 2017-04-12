@@ -39,3 +39,5 @@ class SimpleStatus(Status):
     def load(self, dump: bytes):
         self.attributes = pickle.loads(dump)
 
+
+Status.register(SimpleStatus)
