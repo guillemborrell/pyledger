@@ -4,7 +4,7 @@ import pickle
 
 class Status(abc.ABC):
     """
-    Prototype of status
+    Status abstract class
     """
     @abc.abstractmethod
     def __setattr__(self, key: str, value):
@@ -24,20 +24,26 @@ class Status(abc.ABC):
 
 
 class SimpleStatus(Status):
+    """
+    Simple status for the smart contract based on a dictionary.
+    """
     def __init__(self, **kwargs):
-        self.attributes = kwargs
+        self.__dict__['attributes'] = kwargs
 
     def __setattr__(self, key: str, value):
-        self.attributes[key] = value
+        self.__dict__['attributes'][key] = value
 
     def __getattr__(self, item: str):
-        return self.attributes[item]
+        return self.__dict__['attributes'][item]
 
     def dump(self):
-        return pickle.dumps(self.attributes)
+        return pickle.dumps(self.__dict__['attributes'])
 
     def load(self, dump: bytes):
-        self.attributes = pickle.loads(dump)
+        self.__dict__['attributes'] = pickle.loads(dump)
+
+    def __contains__(self, item):
+        return item in self.__dict__['attributes']
 
 
 Status.register(SimpleStatus)
