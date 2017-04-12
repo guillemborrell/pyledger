@@ -67,7 +67,7 @@ class Handler:
         :param message: Request from the client
         :return:
         """
-        pass
+        return True, b'echo'
 
     def contracts(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         pass
@@ -161,3 +161,10 @@ def handle_request(payload: bytes):
         response.data = result
         return response.SerializeToString()
 
+
+def make_server(contract):
+    """
+    Create a server given a smart contract.
+    :param contract:
+    :return:
+    """
