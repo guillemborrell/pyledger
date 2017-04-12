@@ -12,9 +12,7 @@ import pickle
 
 class Handler:
     def __init__(self):
-        self.methods = []
-        self.attributes = None
-        self.permissions = {}
+        methods = None
 
     @allow(Permissions.ROOT)
     def new_user(self, message: PyledgerRequest) -> Tuple[bool, bytes]:

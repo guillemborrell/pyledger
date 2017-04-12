@@ -19,7 +19,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.exceptions import InvalidKey
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
@@ -53,24 +53,6 @@ class Permissions(Enum):
     ANON = 3
 
 
-class Contract(Model):
-    __tablename__ = 'contracts'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    description = Column(String)
-    created = Column(DateTime)
-    methods = Column(LargeBinary)
-    api = Column(LargeBinary)
-    signatures = Column(LargeBinary)
-    status = relationship("Status", lazy="subquery")
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", back_populates="contracts")
-
-    @classmethod
-    def query(cls):
-        return DB.session.query(cls)
-
-
 class Status(Model):
     __tablename__ = 'status'
     id = Column(Integer, primary_key=True)
@@ -87,6 +69,38 @@ class Status(Model):
     @classmethod
     def query(cls):
         return DB.session.query(cls)
+
+
+class Contract(Model):
+    __tablename__ = 'contracts'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    description = Column(String)
+    created = Column(DateTime)
+    methods = Column(LargeBinary)
+    api = Column(LargeBinary)
+    signatures = Column(LargeBinary)
+    status = relationship("Status", lazy="subquery")
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="contracts")
+
+    @classmethod
+    def query(cls):
+        return DB.session.query(cls)
+
+    @staticmethod
+    def from_name(name):
+        return Contract.query().filter(Contract.name == name).one_or_none()
+
+    def last_status(self):
+        return Status.query().filter(
+            Status.contract == self
+        ).order_by(desc(Status.when)).first()
+
+    def last_statuses(self):
+        return Status.query().filter(
+            Status.contract == self
+        ).order_by(desc.Status.when).limit(2).all()
 
 
 class User(Model):
