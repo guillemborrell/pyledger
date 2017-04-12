@@ -1,5 +1,6 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from .db import Permissions, User, DB, Session
+from .db import Permissions, User, DB, Session, Contract, Status
+from .status import SimpleStatus
 from google.protobuf.message import DecodeError
 from typing import Tuple
 from .auth import allow, permissions_registry, create_user
@@ -8,6 +9,7 @@ from .config import LIFETIME
 import datetime
 import inspect
 import pickle
+import dill
 
 
 class Handler:
@@ -160,7 +162,35 @@ def handle_request(payload: bytes):
         return response.SerializeToString()
 
 
-def make_server(contract):
+def contract_methods(contract):
+    """
+    Obtain methods from the contract
+
+    :param contract:
+    :return:
+    """
+    methods = []
+    for name, function in inspect.getmembers(contract,
+                                             predicate=inspect.isfunction):
+        methods.append(function)
+
+    return methods
+
+
+def register_contract(contract, status=SimpleStatus, description=''):
+    """
+    Register a contract and make it
+    :param contract:
+    :return:
+    """
+    contract = Contract()
+    contract.name = contract.__name__
+    contract.created = datetime.datetime.now()
+    contract.description = description
+    contract.methods = dill.dumps(contract_methods(contract))
+
+
+def make_server():
     """
     Create a server given a smart contract.
     :param contract:
