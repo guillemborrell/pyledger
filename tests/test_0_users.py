@@ -1,7 +1,9 @@
-from pyledger2.db import User, DB, Permissions
+from pyledger2.db import User, DB, Permissions, Session
 from pyledger2.auth import create_master, create_user
 from pyledger2.handlers import handle_request
 from pyledger2.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
+from pyledger2.config import LIFETIME
+import datetime
 import pickle
 
 DB.sync_tables()
@@ -15,6 +17,16 @@ def test_0_master_user():
     user = User.from_name('master')
     assert user.get_permissions() == Permissions.ROOT
     assert user.check_password('password') == True
+
+    # Create dummy session
+    session = Session()
+    session.user = user
+    session.key = 'test_session'
+    session.registered = datetime.datetime.now()
+    session.until = datetime.datetime.now() + datetime.timedelta(hours=LIFETIME)
+
+    DB.session.add(session)
+    DB.session.commit()
 
 
 def test_1_user():
@@ -35,6 +47,7 @@ def test_2_create_user():
     request.request = 'new_user'
     request.user = 'master'
     request.password = 'password'
+    request.session_key = 'test_session'
     request.data = pickle.dumps(('user2', 'new_password'))
 
     response = PyledgerResponse()
@@ -62,22 +75,6 @@ def test_3_create_without_permissions():
     assert response.successful == False
     assert response.data == b'Not enough permissions'
 
-
-# Now we have some accounts, and we can test activation and authentication
-
-def test_4_master_session():
-    """
-    Get a master session key
-    """
-    request = PyledgerRequest()
-    request.request = 'session'
-    request.user = 'master'
-    request.password = 'password'
-
-    response = PyledgerResponse()
-    response.ParseFromString(handle_request(request.SerializeToString()))
-
-    assert response.successful == True
 
 
 

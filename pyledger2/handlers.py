@@ -1,9 +1,11 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from .db import Permissions, User
+from .db import Permissions, User, DB, Session
 from google.protobuf.message import DecodeError
 from typing import Tuple
 from .auth import allow, permissions_registry, create_user
 from uuid import uuid4
+from .config import LIFETIME
+import datetime
 import inspect
 import pickle
 
@@ -29,10 +31,12 @@ class Handler:
 
     @allow(Permissions.USER)
     def set_password(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
-        pass
+        password = message.data.decode('utf-8')
+        user = User.from_name(message.user)
+        user.set_password(password)
+        DB.session.commit()
 
-    def authentication(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
-        pass
+        return True, message.user.encode('utf-8')
 
     def api(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         pass
@@ -44,7 +48,17 @@ class Handler:
         :param message:
         :return:
         """
-        return True, b'0'
+        user = User.from_name(message.user)
+        session = Session()
+        session.user = user
+        session.key = str(uuid4())
+        session.registered = datetime.datetime.now()
+        session.until = datetime.datetime.now() + datetime.timedelta(hours=LIFETIME)
+
+        DB.session.add(session)
+        DB.session.commit()
+
+        return True, session.key.encode('utf-8')
 
     def echo(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         """
@@ -69,11 +83,24 @@ class Handler:
 
 
 def handler_methods(handler):
+    """
+    Obtain the methods of the handler. Utility funciton in case some
+    method is added sometime in the future.
+
+    :param handler:
+    :return:
+    """
     member_list = inspect.getmembers(handler, predicate=inspect.ismethod)
     return [pair[0] for pair in member_list]
 
 
-def handle_request(payload):
+def handle_request(payload: bytes):
+    """
+    Handle a single request
+
+    :param payload: Serialized PyledgerRequest message
+    :return:
+    """
     handler = Handler()
     message = PyledgerRequest()
     response = PyledgerResponse()
@@ -104,6 +131,23 @@ def handle_request(payload):
             if user.get_permissions().value > permission_required.value:
                 response.successful = False
                 response.data = b'Not enough permissions'
+                return response.SerializeToString()
+
+            session = Session.from_key(message.session_key)
+
+            if not session:
+                response.successful = False
+                response.data = b'Session not available'
+                return response.SerializeToString()
+
+            if not session.user == user:
+                response.successful = False
+                response.data = b'Session not owned by this user'
+                return response.SerializeToString()
+
+            if session.until < datetime.datetime.now():
+                response.successful = False
+                response.data = b'Session expired, restart your client'
                 return response.SerializeToString()
 
         # Select the function from the handler

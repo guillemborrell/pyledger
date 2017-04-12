@@ -161,4 +161,16 @@ class Session(Model):
     def query(cls):
         return DB.session.query(cls)
 
+    @staticmethod
+    def from_key(key):
+        return Session.query().filter(Session.key == key).one_or_none()
 
+
+class Task(Model):
+    __tablename__ = 'tasks'
+    id = Column(Integer, primary_key=True)
+    method = Column(String)
+    when = Column(DateTime)
+
+    def __repr__(self):
+        return 'Task. Scheduled: {}'.format(self.when.isoformat())

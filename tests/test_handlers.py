@@ -20,8 +20,9 @@ from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 
 def test_handler_methods():
     assert set(handler_methods(Handler())) == {
-        '__init__', 'authentication', 'api', 'session', 'echo',
-        'contracts', 'verify', 'call', 'status', 'new_user', 'set_password'
+        '__init__', 'api', 'session', 'echo',
+        'contracts', 'verify', 'call', 'status',
+        'new_user', 'set_password'
     }
 
 
@@ -44,3 +45,4 @@ def test_wrong_request():
 
     assert response.successful == False
     assert response.data == b'Request type not available'
+

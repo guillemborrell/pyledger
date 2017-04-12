@@ -18,6 +18,8 @@ from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import asyncio
 
+loop = asyncio.get_event_loop()
+
 
 class Protocol(WebSocketServerProtocol):
     def onConnect(self, request):
@@ -42,7 +44,6 @@ class Protocol(WebSocketServerProtocol):
 def run_server(protocol, address="ws://127.0.0.1:9000"):
         factory = WebSocketServerFactory(address)
         factory.protocol = protocol
-        loop = asyncio.get_event_loop()
         server = loop.create_server(factory,
                                     '0.0.0.0',
                                     int(address.split(':')[2])
