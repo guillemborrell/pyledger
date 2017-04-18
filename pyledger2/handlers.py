@@ -168,28 +168,69 @@ def contract_methods(contract):
     :param contract:
     :return:
     """
-    methods = []
+    methods = {}
+
     for name, function in inspect.getmembers(contract,
-                                             predicate=inspect.isfunction):
-        methods.append(function)
+                                             predicate=inspect.ismethod):
+        if not name == '__init__':
+            methods[name] = function
 
     return methods
 
 
-def register_contract(contract, **kwargs):
+def contract_api(contract):
+    api_spec = {}
+    methods = contract_methods(contract)
+    for method in methods:
+        function_spec = {}
+        sig = inspect.signature(methods[method])
+        for param in sig.parameters:
+            function_spec[param] = sig.parameters[param].annotation
+
+        api_spec[method] = function_spec
+
+    return api_spec
+
+
+def contract_signatures(contract):
+    signatures = {}
+    methods = contract_methods(contract)
+    for k, method in methods.items():
+        signatures[k] = inspect.signature(method)
+
+    return signatures
+
+
+def register_contract(contract, description=''):
     """
     Register a contract and make it
     :param contract:
     :return:
     """
-    contract = Contract()
-    contract.name = contract.__name__
-    contract.created = datetime.datetime.now()
+    db_contract = Contract()
+    db_contract.name = contract.__class__.__name__
+    db_contract.created = datetime.datetime.now()
+    db_contract.description = description
 
-    if 'description' in kwargs:
-        contract.description = kwargs['description']
+    methods = contract_methods(contract)
+    api = contract_api(contract)
+    signatures = contract_signatures(contract)
 
-    contract.methods = dill.dumps(contract_methods(contract))
+    print(methods)
+
+    db_contract.methods = dill.dumps(methods)
+    db_contract.api = dill.dumps(api)
+    db_contract.signatures = dill.dumps(signatures)
+
+    first_status = Status()
+    first_status.contract = db_contract
+    first_status.when = datetime.datetime.now()
+    first_status.attributes = contract.status.dump()
+    first_status.key = b'genesis'
+
+    DB.session.add(db_contract)
+    DB.session.add(first_status)
+    DB.session.commit()
 
 
 def make_server():

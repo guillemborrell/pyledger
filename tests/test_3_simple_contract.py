@@ -1,6 +1,6 @@
 from pyledger2.contract import SimpleContract
 from pyledger2.status import BaseStatus
-from uuid import uuid4
+from pyledger2.handlers import register_contract
 
 
 def test_new_contract():
@@ -13,7 +13,7 @@ def test_new_contract():
 def test_contract_status():
     """Check if returns a status"""
     class MyContract(SimpleContract):
-        def greet(self, name):
+        def greet(self, name: str):
             self.counter += 1
             return "hello, " + name
 
@@ -61,3 +61,18 @@ def test_full_contract():
             return self, str(self.accounts[key])
 
     contract = DigitalCurrency(accounts={})
+    contract.add_account('key1')
+    contract.increment('key1', 100.0)
+    assert contract.balance('key1')[1] == '100.0'
+
+
+def test_register_contract():
+    class MyContract(SimpleContract):
+        def greet(self, name: str):
+            self.counter += 1
+            return "hello, " + name
+
+    this_contract = MyContract(counter=0)
+    register_contract(this_contract)
+
+    assert False

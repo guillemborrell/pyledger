@@ -30,6 +30,8 @@ class SimpleContract(BaseContract):
 
     The goal of this class is to make a contact feel just like a Python class.
     """
+    status_class = SimpleStatus
+
     def __init__(self, **kwargs):
         self.keys = (k for k in kwargs)
         for k, v in kwargs.items():
@@ -37,7 +39,7 @@ class SimpleContract(BaseContract):
 
     @property
     def status(self):
-        return SimpleStatus(**{k: getattr(self, k) for k in self.keys})
+        return self.status_class(**{k: getattr(self, k) for k in self.keys})
 
 
 BaseContract.register(SimpleContract)

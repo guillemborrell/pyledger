@@ -26,9 +26,9 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, \
     LargeBinary
 from sqlalchemy.orm import relationship
 
-from pyledger.config import args
+from pyledger2.config import args
 
-from enum import Enum, auto
+from enum import Enum
 import base64
 
 
