@@ -1,6 +1,5 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 from .db import Permissions, User, DB, Session, Contract, Status
-from .status import SimpleStatus
 from google.protobuf.message import DecodeError
 from typing import Tuple
 from .auth import allow, permissions_registry, create_user
@@ -177,7 +176,7 @@ def contract_methods(contract):
     return methods
 
 
-def register_contract(contract, status=SimpleStatus, description=''):
+def register_contract(contract, **kwargs):
     """
     Register a contract and make it
     :param contract:
@@ -186,7 +185,10 @@ def register_contract(contract, status=SimpleStatus, description=''):
     contract = Contract()
     contract.name = contract.__name__
     contract.created = datetime.datetime.now()
-    contract.description = description
+
+    if 'description' in kwargs:
+        contract.description = kwargs['description']
+
     contract.methods = dill.dumps(contract_methods(contract))
 
 
@@ -196,3 +198,4 @@ def make_server():
     :param contract:
     :return:
     """
+    pass

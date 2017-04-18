@@ -14,9 +14,30 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .status import SimpleStatus
+import abc
 
-class Contract:
+
+class BaseContract(abc.ABC):
+    @abc.abstractproperty
+    def status(self):
+        pass
+
+
+class SimpleContract(BaseContract):
     """
-    This class does nothing, but that is the whole point.
+    Contract that uses SimpleStatus for serialization.
+
+    The goal of this class is to make a contact feel just like a Python class.
     """
-    pass
+    def __init__(self, **kwargs):
+        self.keys = (k for k in kwargs)
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    @property
+    def status(self):
+        return SimpleStatus(**{k: getattr(self, k) for k in self.keys})
+
+
+BaseContract.register(SimpleContract)

@@ -14,12 +14,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.status import Status, SimpleStatus
+from pyledger2.status import BaseStatus, SimpleStatus
 
 
 def test_1():
     status = SimpleStatus(key='value')
-    assert isinstance(status, Status) == True
+    assert isinstance(status, BaseStatus) == True
     assert ('key' in status) == True
 
 

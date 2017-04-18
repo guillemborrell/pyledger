@@ -2,7 +2,7 @@ import abc
 import pickle
 
 
-class Status(abc.ABC):
+class BaseStatus(abc.ABC):
     """
     Status abstract class
     """
@@ -23,7 +23,7 @@ class Status(abc.ABC):
         pass
 
 
-class SimpleStatus(Status):
+class SimpleStatus(BaseStatus):
     """
     Simple status for the smart contract based on a dictionary.
     """
@@ -46,4 +46,4 @@ class SimpleStatus(Status):
         return item in self.__dict__['attributes']
 
 
-Status.register(SimpleStatus)
+BaseStatus.register(SimpleStatus)
