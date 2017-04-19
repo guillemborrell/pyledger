@@ -46,3 +46,18 @@ def test_wrong_request():
     assert response.successful == False
     assert response.data == b'Request type not available'
 
+
+def test_call_method():
+    request = PyledgerRequest()
+    response = PyledgerResponse()
+
+    request.request = 'call'
+    request.contract = 'somecontract'
+    request.call = 'somemethod'
+
+    byte_request = request.SerializeToString()
+    byte_response = handle_request(byte_request)
+    response.ParseFromString(byte_response)
+
+    assert response.successful == True
+    assert response.data == b'0'

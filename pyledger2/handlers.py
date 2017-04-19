@@ -78,7 +78,13 @@ class Handler:
         pass
 
     def call(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
-        pass
+        """
+        Call handler for contract methods.
+
+        :param message:
+        :return:
+        """
+        return True, message.contract.encode('utf-8')
 
 
 def handler_methods(handler):

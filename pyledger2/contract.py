@@ -33,7 +33,7 @@ class SimpleContract(BaseContract):
 
     The goal of this class is to make a contact feel just like a Python class.
     """
-    __status_class = SimpleStatus
+    _status_class = SimpleStatus
 
 BaseContract.register(SimpleContract)
 
@@ -89,9 +89,7 @@ def status(contract):
         if not attribute[0].startswith('_'):
             attributes[attribute[0]] = attribute[1]
 
-    print(attributes)
-
-    return contract.__status_class(attributes=attributes)
+    return contract._status_class(attributes=attributes)
 
 
 def register_contract(contract, description=''):

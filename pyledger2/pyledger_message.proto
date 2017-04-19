@@ -2,8 +2,8 @@ syntax = "proto3";
 
 message PyledgerRequest {
     string request = 1;
-    string call = 2;
-    string contract = 3;
+    string contract = 2;
+    string call = 3;
     string client_key = 4;
     string session_key = 5;
     string user = 6;
