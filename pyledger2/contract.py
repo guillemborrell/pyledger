@@ -99,12 +99,15 @@ def register_contract(contract, description=''):
     """
     global contract_registry
 
+    if contract.__class__.__name__ in contract_registry:
+        raise ValueError('A contract with the same name already registered')
+    else:
+        contract_registry[contract.__class__.__name__] = contract
+
     db_contract = Contract()
     db_contract.name = contract.__class__.__name__
     db_contract.created = datetime.datetime.now()
     db_contract.description = description
-
-    contract_registry[contract.__class__.__name__] = contract
 
     first_status = Status()
     first_status.contract = db_contract
