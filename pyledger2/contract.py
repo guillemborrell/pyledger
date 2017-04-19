@@ -24,9 +24,7 @@ contract_registry = {}
 
 
 class BaseContract(abc.ABC):
-    @abc.abstractproperty
-    def status(self):
-        pass
+    pass
 
 
 class SimpleContract(BaseContract):
@@ -35,22 +33,12 @@ class SimpleContract(BaseContract):
 
     The goal of this class is to make a contact feel just like a Python class.
     """
-    status_class = SimpleStatus
-
-    def __init__(self, **kwargs):
-        self.keys = (k for k in kwargs)
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
-    @property
-    def status(self):
-        return self.status_class(**{k: getattr(self, k) for k in self.keys})
-
+    _status_class = SimpleStatus
 
 BaseContract.register(SimpleContract)
 
 
-def contract_methods(contract):
+def methods(contract):
     """
     Obtain methods from the contract
 
@@ -67,12 +55,12 @@ def contract_methods(contract):
     return methods
 
 
-def contract_api(contract):
+def api(contract):
     api_spec = {}
-    methods = contract_methods(contract)
-    for method in methods:
+    contract_methods = methods(contract)
+    for method in contract_methods:
         function_spec = {}
-        sig = inspect.signature(methods[method])
+        sig = inspect.signature(contract_methods[method])
         for param in sig.parameters:
             function_spec[param] = sig.parameters[param].annotation
 
@@ -81,13 +69,29 @@ def contract_api(contract):
     return api_spec
 
 
-def contract_signatures(contract):
-    signatures = {}
-    methods = contract_methods(contract)
-    for k, method in methods.items():
-        signatures[k] = inspect.signature(method)
+def signatures(contract):
+    contract_signatures = {}
+    contract_methods = methods(contract)
+    for k, method in contract_methods.items():
+        contract_signatures[k] = inspect.signature(method)
 
-    return signatures
+    return contract_signatures
+
+
+def status(contract):
+    all_attributes = inspect.getmembers(
+        contract,
+        predicate=lambda a: not(inspect.isroutine(a)))
+
+    attributes = {}
+
+    for attribute in all_attributes:
+        if not attribute[0].startswith('_'):
+            attributes[attribute[0]] = attribute[1]
+
+    print(attributes)
+
+    return contract._status_class(attributes=attributes)
 
 
 def register_contract(contract, description=''):
@@ -112,7 +116,7 @@ def register_contract(contract, description=''):
     first_status = Status()
     first_status.contract = db_contract
     first_status.when = datetime.datetime.now()
-    first_status.attributes = contract.status.dump()
+    first_status.attributes = status(contract).dump()
     first_status.key = b'genesis'
 
     DB.session.add(db_contract)

@@ -15,27 +15,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyledger2.contract import SimpleContract, register_contract, \
-    contract_methods, contract_api, contract_signatures
+    methods, api, signatures, status
 from pyledger2.status import BaseStatus
 from inspect import Signature, Parameter
-
-
-def test_new_contract():
-    contract = SimpleContract(counter=0)
-    contract.counter = 1
-
-    assert contract.counter == 1
 
 
 def test_contract_status():
     """Check if returns a status"""
     class MyContract(SimpleContract):
+        counter = 0
+
         def greet(self, name: str):
             self.counter += 1
             return "hello, " + name
 
-    this_contract = MyContract(counter=0)
-    this_contract_status = this_contract.status
+    this_contract = MyContract()
+    this_contract_status = status(this_contract)
 
     assert isinstance(this_contract_status, BaseStatus) == True
 
@@ -43,6 +38,8 @@ def test_contract_status():
 def test_full_contract():
     """Check that a contract feels like a class"""
     class DigitalCurrency(SimpleContract):
+        accounts = {}
+
         def add_account(self, key: str):
             if key in self.accounts:
                 raise Exception('Account already exists')
@@ -77,19 +74,19 @@ def test_full_contract():
 
             return self, str(self.accounts[key])
 
-    contract = DigitalCurrency(accounts={})
+    contract = DigitalCurrency()
 
-    assert [k for k in contract_methods(contract)] == [
+    assert [k for k in methods(contract)] == [
         'add_account', 'balance', 'increment', 'transfer']
 
-    assert contract_api(contract) == {
+    assert api(contract) == {
         'add_account': {'key': str},
         'balance': {'key': str},
         'increment': {'key': str, 'quantity': float},
         'transfer': {'dest': str, 'quantity': float, 'source': str}
     }
 
-    assert contract_signatures(contract) == {
+    assert signatures(contract) == {
         'add_account': Signature(parameters=[
             Parameter('key', Parameter.POSITIONAL_OR_KEYWORD, annotation=str)]),
         'balance': Signature(parameters=[
@@ -112,11 +109,13 @@ def test_full_contract():
 
 def test_register_contract():
     class MyContract(SimpleContract):
+        counter = 0
+
         def greet(self, name: str):
             self.counter += 1
             return "hello, " + name
 
-    this_contract = MyContract(counter=0)
+    this_contract = MyContract()
     register_contract(this_contract)
 
     assert True
