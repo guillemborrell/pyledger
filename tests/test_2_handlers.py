@@ -59,5 +59,5 @@ def test_call_method():
     byte_response = handle_request(byte_request)
     response.ParseFromString(byte_response)
 
-    assert response.successful == True
-    assert response.data == b'0'
+    assert response.successful == False
+    assert response.data == b'User function somecontract not present'

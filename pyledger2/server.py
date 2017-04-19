@@ -36,6 +36,7 @@ class Protocol(WebSocketServerProtocol):
 
         # echo back message verbatim
         self.sendMessage(payload, isBinary)
+        #self.sendClose()
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))

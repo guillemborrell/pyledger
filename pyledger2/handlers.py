@@ -69,7 +69,13 @@ class Handler:
         return True, b'echo'
 
     def contracts(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
-        pass
+        """
+        Returns a serialized list of the available contracts
+
+        :param message: Request from the client
+        :return:
+        """
+        return True, pickle.dumps([k for k in contract_registry])
 
     def status(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         pass
@@ -84,6 +90,10 @@ class Handler:
         :param message:
         :return:
         """
+        if message.contract not in contract_registry:
+            return False, 'User function {} not present'.format(message.contract).encode('utf-8')
+
+        contract = contract_registry[message.contract]
         return True, message.contract.encode('utf-8')
 
 
