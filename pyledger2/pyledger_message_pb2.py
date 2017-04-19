@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='pyledger_message.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x16pyledger_message.proto\"\x96\x01\n\x0fPyledgerRequest\x12\x0f\n\x07request\x18\x01 \x01(\t\x12\x0c\n\x04\x63\x61ll\x18\x02 \x01(\t\x12\x12\n\nclient_key\x18\x03 \x01(\t\x12\x13\n\x0bsession_key\x18\x04 \x01(\t\x12\x0c\n\x04user\x18\x05 \x01(\t\x12\x10\n\x08password\x18\x06 \x01(\t\x12\r\n\x05index\x18\x07 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x08 \x01(\x0c\"\x8f\x01\n\x10PyledgerResponse\x12\x10\n\x08response\x18\x01 \x01(\t\x12\x12\n\nsuccessful\x18\x02 \x01(\x08\x12\r\n\x05topic\x18\x03 \x01(\t\x12\x10\n\x08\x61uth_key\x18\x04 \x01(\t\x12\x13\n\x0bsession_key\x18\x05 \x01(\t\x12\x11\n\ttimestamp\x18\x06 \x01(\x02\x12\x0c\n\x04\x64\x61ta\x18\x07 \x01(\x0c\x62\x06proto3')
+  serialized_pb=_b('\n\x16pyledger_message.proto\"\xa8\x01\n\x0fPyledgerRequest\x12\x0f\n\x07request\x18\x01 \x01(\t\x12\x0c\n\x04\x63\x61ll\x18\x02 \x01(\t\x12\x10\n\x08\x63ontract\x18\x03 \x01(\t\x12\x12\n\nclient_key\x18\x04 \x01(\t\x12\x13\n\x0bsession_key\x18\x05 \x01(\t\x12\x0c\n\x04user\x18\x06 \x01(\t\x12\x10\n\x08password\x18\x07 \x01(\t\x12\r\n\x05index\x18\x08 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\t \x01(\x0c\"\xa1\x01\n\x10PyledgerResponse\x12\x10\n\x08response\x18\x01 \x01(\t\x12\x10\n\x08\x63ontract\x18\x02 \x01(\t\x12\x12\n\nsuccessful\x18\x03 \x01(\x08\x12\r\n\x05topic\x18\x04 \x01(\t\x12\x10\n\x08\x61uth_key\x18\x05 \x01(\t\x12\x13\n\x0bsession_key\x18\x06 \x01(\t\x12\x11\n\ttimestamp\x18\x07 \x01(\x02\x12\x0c\n\x04\x64\x61ta\x18\x08 \x01(\x0c\x62\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -48,43 +48,50 @@ _PYLEDGERREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='client_key', full_name='PyledgerRequest.client_key', index=2,
+      name='contract', full_name='PyledgerRequest.contract', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session_key', full_name='PyledgerRequest.session_key', index=3,
+      name='client_key', full_name='PyledgerRequest.client_key', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='user', full_name='PyledgerRequest.user', index=4,
+      name='session_key', full_name='PyledgerRequest.session_key', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='password', full_name='PyledgerRequest.password', index=5,
+      name='user', full_name='PyledgerRequest.user', index=5,
       number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='index', full_name='PyledgerRequest.index', index=6,
+      name='password', full_name='PyledgerRequest.password', index=6,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='data', full_name='PyledgerRequest.data', index=7,
-      number=8, type=12, cpp_type=9, label=1,
+      name='index', full_name='PyledgerRequest.index', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='PyledgerRequest.data', index=8,
+      number=9, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -102,7 +109,7 @@ _PYLEDGERREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=27,
-  serialized_end=177,
+  serialized_end=195,
 )
 
 
@@ -121,43 +128,50 @@ _PYLEDGERRESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='successful', full_name='PyledgerResponse.successful', index=1,
-      number=2, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='topic', full_name='PyledgerResponse.topic', index=2,
-      number=3, type=9, cpp_type=9, label=1,
+      name='contract', full_name='PyledgerResponse.contract', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='auth_key', full_name='PyledgerResponse.auth_key', index=3,
+      name='successful', full_name='PyledgerResponse.successful', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='topic', full_name='PyledgerResponse.topic', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='session_key', full_name='PyledgerResponse.session_key', index=4,
+      name='auth_key', full_name='PyledgerResponse.auth_key', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='timestamp', full_name='PyledgerResponse.timestamp', index=5,
-      number=6, type=2, cpp_type=6, label=1,
+      name='session_key', full_name='PyledgerResponse.session_key', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='PyledgerResponse.timestamp', index=6,
+      number=7, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='data', full_name='PyledgerResponse.data', index=6,
-      number=7, type=12, cpp_type=9, label=1,
+      name='data', full_name='PyledgerResponse.data', index=7,
+      number=8, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -174,8 +188,8 @@ _PYLEDGERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=180,
-  serialized_end=323,
+  serialized_start=198,
+  serialized_end=359,
 )
 
 DESCRIPTOR.message_types_by_name['PyledgerRequest'] = _PYLEDGERREQUEST
