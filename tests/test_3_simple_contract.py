@@ -72,6 +72,7 @@ def test_register_contract():
             self.counter += 1
             return "hello, " + name
 
+    dill
     this_contract = MyContract(counter=0)
     register_contract(this_contract)
 

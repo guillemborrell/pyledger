@@ -3,20 +3,22 @@ syntax = "proto3";
 message PyledgerRequest {
     string request = 1;
     string call = 2;
-    string client_key = 3;
-    string session_key = 4;
-    string user = 5;
-    string password = 6;
-    string index = 7;
-    bytes data = 8;
+    string contract = 3;
+    string client_key = 4;
+    string session_key = 5;
+    string user = 6;
+    string password = 7;
+    string index = 8;
+    bytes data = 9;
 }
 
 message PyledgerResponse {
     string response = 1;
-    bool successful = 2;
-    string topic = 3;
-    string auth_key = 4;
-    string session_key = 5;
-    float timestamp = 6;
-    bytes data = 7;
+    string contract = 2;
+    bool successful = 3;
+    string topic = 4;
+    string auth_key = 5;
+    string session_key = 6;
+    float timestamp = 7;
+    bytes data = 8;
 }

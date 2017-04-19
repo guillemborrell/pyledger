@@ -1,14 +1,14 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from .db import Permissions, User, DB, Session, Contract, Status
+from .db import Permissions, User, DB, Session
+from .auth import allow, permissions_registry, create_user
+from .config import LIFETIME
+from .contract import contract_registry
+from uuid import uuid4
 from google.protobuf.message import DecodeError
 from typing import Tuple
-from .auth import allow, permissions_registry, create_user
-from uuid import uuid4
-from .config import LIFETIME
 import datetime
 import inspect
 import pickle
-import dill
 
 
 class Handler:
@@ -159,78 +159,6 @@ def handle_request(payload: bytes):
         response.successful = successful
         response.data = result
         return response.SerializeToString()
-
-
-def contract_methods(contract):
-    """
-    Obtain methods from the contract
-
-    :param contract:
-    :return:
-    """
-    methods = {}
-
-    for name, function in inspect.getmembers(contract,
-                                             predicate=inspect.ismethod):
-        if not name == '__init__':
-            methods[name] = function
-
-    return methods
-
-
-def contract_api(contract):
-    api_spec = {}
-    methods = contract_methods(contract)
-    for method in methods:
-        function_spec = {}
-        sig = inspect.signature(methods[method])
-        for param in sig.parameters:
-            function_spec[param] = sig.parameters[param].annotation
-
-        api_spec[method] = function_spec
-
-    return api_spec
-
-
-def contract_signatures(contract):
-    signatures = {}
-    methods = contract_methods(contract)
-    for k, method in methods.items():
-        signatures[k] = inspect.signature(method)
-
-    return signatures
-
-
-def register_contract(contract, description=''):
-    """
-    Register a contract and make it
-    :param contract:
-    :return:
-    """
-    db_contract = Contract()
-    db_contract.name = contract.__class__.__name__
-    db_contract.created = datetime.datetime.now()
-    db_contract.description = description
-
-    methods = contract_methods(contract)
-    api = contract_api(contract)
-    signatures = contract_signatures(contract)
-
-    print(methods)
-
-    db_contract.methods = dill.dumps(methods)
-    db_contract.api = dill.dumps(api)
-    db_contract.signatures = dill.dumps(signatures)
-
-    first_status = Status()
-    first_status.contract = db_contract
-    first_status.when = datetime.datetime.now()
-    first_status.attributes = contract.status.dump()
-    first_status.key = b'genesis'
-
-    DB.session.add(db_contract)
-    DB.session.add(first_status)
-    DB.session.commit()
 
 
 def make_server():
