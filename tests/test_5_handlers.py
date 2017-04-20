@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.handlers import Handler, handler_methods, handle_request
+from pyledger2.handlers import handle_request
 from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 import pickle
 
@@ -57,3 +57,19 @@ def test_api():
         'increment': {'key': str, 'quantity': float},
         'transfer': {'dest': str, 'quantity': float, 'source': str}
     }
+
+
+def test_status():
+    request = PyledgerRequest()
+    response = PyledgerResponse()
+
+    request.request = 'status'
+    request.contract = 'DigitalCurrency'
+
+    byte_request = request.SerializeToString()
+    byte_response = handle_request(byte_request)
+    response.ParseFromString(byte_response)
+    status = pickle.loads(response.data)
+
+    assert response.successful == True
+    assert status == {'attributes': {'accounts': {}}}

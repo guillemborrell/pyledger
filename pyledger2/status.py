@@ -22,6 +22,10 @@ class BaseStatus(abc.ABC):
     def load(self, dump: bytes):
         pass
 
+    @abc.abstractmethod
+    def to_dict(self):
+        pass
+
 
 class SimpleStatus(BaseStatus):
     """
@@ -41,6 +45,9 @@ class SimpleStatus(BaseStatus):
 
     def load(self, dump: bytes):
         self.__dict__['attributes'] = pickle.loads(dump)
+
+    def to_dict(self):
+        return self.__dict__['attributes']
 
     def __contains__(self, item):
         return item in self.__dict__['attributes']

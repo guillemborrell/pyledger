@@ -1,5 +1,5 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from .db import Permissions, User, DB, Session
+from .db import Permissions, User, DB, Session, Contract
 from .auth import allow, permissions_registry, create_user
 from .config import LIFETIME
 from .contract import contract_registry, api
@@ -12,9 +12,6 @@ import pickle
 
 
 class Handler:
-    def __init__(self):
-        methods = None
-
     @allow(Permissions.ROOT)
     def new_user(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         """
@@ -84,7 +81,17 @@ class Handler:
         return True, pickle.dumps([k for k in contract_registry])
 
     def status(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
-        pass
+        if message.contract not in contract_registry:
+            return False, 'User function {} not present'.format(
+                message.contract).encode('utf-8')
+
+        contract_class = contract_registry[message.contract]
+        status_instance = contract_class._status_class()
+        contract = Contract.from_name(message.contract)
+        status = contract.last_status()
+        status_instance.load(status.attributes)
+        print(status_instance.to_dict())
+        return True, pickle.dumps(status_instance.to_dict())
 
     def verify(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         pass
@@ -97,7 +104,8 @@ class Handler:
         :return:
         """
         if message.contract not in contract_registry:
-            return False, 'User function {} not present'.format(message.contract).encode('utf-8')
+            return False, 'User function {} not present'.format(
+                message.contract).encode('utf-8')
 
         contract = contract_registry[message.contract]
         return True, message.contract.encode('utf-8')
