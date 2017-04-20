@@ -2,7 +2,7 @@ from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 from .db import Permissions, User, DB, Session
 from .auth import allow, permissions_registry, create_user
 from .config import LIFETIME
-from .contract import contract_registry
+from .contract import contract_registry, api
 from uuid import uuid4
 from google.protobuf.message import DecodeError
 from typing import Tuple
@@ -38,7 +38,13 @@ class Handler:
         return True, message.user.encode('utf-8')
 
     def api(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
-        pass
+        """Get the api of the contract"""
+
+        if message.contract not in contract_registry:
+            return False, 'User function {} not present'.format(
+                message.contract).encode('utf-8')
+
+        return True, pickle.dumps(api(contract_registry[message.contract]))
 
     def session(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
         """

@@ -115,7 +115,8 @@ def register_contract(contract, description=''):
     first_status.contract = db_contract
     first_status.when = datetime.datetime.now()
     first_status.attributes = status(contract).dump()
-    first_status.key = b'genesis'
+    # Genesis key is the name of the contract
+    first_status.key = contract.__class__.__name__.encode('utf-8')
 
     DB.session.add(db_contract)
     DB.session.add(first_status)

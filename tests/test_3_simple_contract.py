@@ -119,3 +119,44 @@ def test_register_contract():
     register_contract(this_contract)
 
     assert True
+
+
+def test_register_larger_contract():
+    class DigitalCurrency(SimpleContract):
+        accounts = {}
+
+        def add_account(self, key: str):
+            if key in self.accounts:
+                raise Exception('Account already exists')
+
+            self.accounts[key] = 0.0
+            return self
+
+        def increment(self, key: str, quantity: float):
+            if key not in self.accounts:
+                raise Exception('Account not found')
+
+            self.accounts[key] += quantity
+            return self
+
+        def transfer(self, source: str, dest: str, quantity: float):
+            if source not in self.accounts:
+                raise Exception('Source account not found')
+            if dest not in self.accounts:
+                raise Exception('Destination account not found')
+            if self.accounts[source] < quantity:
+                raise Exception('Not enough funds in source account')
+
+            self.accounts[source] -= quantity
+            self.accounts[dest] += quantity
+
+            return self
+
+        def balance(self, key: str):
+            if key not in self.accounts:
+                print(self.accounts)
+                raise Exception('Account not found')
+
+            return self, str(self.accounts[key])
+
+    register_contract(DigitalCurrency())
