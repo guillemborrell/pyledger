@@ -17,12 +17,14 @@ def test_0_register_larger_contract():
             self.accounts[key] = 0.0
             return key
 
+        @method_allow(Permissions.ROOT)
         def increment(self, key: str, quantity: float):
             if key not in self.accounts:
                 raise Exception('Account not found')
 
             self.accounts[key] += quantity
 
+        @method_allow(Permissions.USER)
         def transfer(self, source: str, dest: str, quantity: float):
             if source not in self.accounts:
                 raise Exception('Source account not found')
@@ -30,10 +32,13 @@ def test_0_register_larger_contract():
                 raise Exception('Destination account not found')
             if self.accounts[source] < quantity:
                 raise Exception('Not enough funds in source account')
+            if quantity < 0:
+                raise Exception('You cannot transfer negative currency')
 
             self.accounts[source] -= quantity
             self.accounts[dest] += quantity
 
+        @method_allow(Permissions.USER)
         def balance(self, key: str):
             if key not in self.accounts:
                 print(self.accounts)
