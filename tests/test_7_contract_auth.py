@@ -52,7 +52,7 @@ def test_0_register_larger_contract():
     response = PyledgerResponse()
 
     request.request = 'call'
-    request.contract = 'DigitalCurrency'
+    request.contract = 'AuthDigitalCurrency'
     request.call = 'add_account'
     request.data = pickle.dumps({'key': 'new_account'})
 
@@ -62,3 +62,24 @@ def test_0_register_larger_contract():
 
     assert response.successful == False
     assert response.data == b'Not enough permissions'
+
+
+def test_access_contract_as_root():
+    request = PyledgerRequest()
+    response = PyledgerResponse()
+
+    request.request = 'call'
+    request.contract = 'AuthDigitalCurrency'
+    request.call = 'add_account'
+    request.user = 'master'
+    request.password = 'password'
+    request.data = pickle.dumps({'key': 'new_account'})
+
+    byte_request = request.SerializeToString()
+    byte_response = handle_request(byte_request)
+    response.ParseFromString(byte_response)
+
+    assert response.successful == True
+
+    response_data = pickle.loads(response.data)
+    assert response_data == 'new_account'
