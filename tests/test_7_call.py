@@ -31,10 +31,25 @@ def test_simple_call():
     byte_request = request.SerializeToString()
     byte_response = handle_request(byte_request)
     response.ParseFromString(byte_response)
-    print(response.data)
 
     response_data = pickle.loads(response.data)
 
     assert response.successful == True
     assert response_data == response_data
 
+
+def test_exception():
+    request = PyledgerRequest()
+    response = PyledgerResponse()
+
+    request.request = 'call'
+    request.contract = 'DigitalCurrency'
+    request.call = 'increment'
+    request.data = pickle.dumps({'key': 'another_account', 'quantity': 100.0})
+
+    byte_request = request.SerializeToString()
+    byte_response = handle_request(byte_request)
+    response.ParseFromString(byte_response)
+
+    assert response.successful == False
+    assert response.data == b"Exception in user function: Exception('Account not found',)"
