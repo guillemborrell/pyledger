@@ -32,6 +32,8 @@ def test_simple_call():
     byte_response = handle_request(byte_request)
     response.ParseFromString(byte_response)
 
-    print(response.data)
+    response_data = pickle.loads(response.data)
+
     assert response.successful == True
+    assert response_data == response_data
 
