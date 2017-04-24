@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import datetime
 
 permissions_registry = {}
+method_permissions_registry = {}
 
 
 def create_master(password):
@@ -51,3 +52,17 @@ def allow(permission):
         return func
 
     return decorator
+
+
+def method_allow(permission):
+    global method_permissions_registry
+
+    def decorator(func):
+        if func.__name__ not in method_permissions_registry:
+            method_permissions_registry[func.__name__] = permission
+        else:
+            raise ValueError('A method with the same name registered with different permissions')
+        return func
+
+    return decorator
+

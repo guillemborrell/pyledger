@@ -1,6 +1,6 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 from .db import Permissions, User, DB, Session, Contract, Status
-from .auth import allow, permissions_registry, create_user
+from .auth import allow, permissions_registry, create_user, method_permissions_registry
 from .config import LIFETIME
 from .contract import contract_registry, api, methods
 from uuid import uuid4
@@ -111,6 +111,20 @@ class Handler:
         if message.call not in methods(contract):
             return False, 'Method {} not found in contact'.format(
                 message.call).encode('utf-8')
+
+        if message.call in method_permissions_registry:
+            user = User.from_name(message.user)
+            permission_required = method_permissions_registry[message.call]
+
+            if not user:
+                if permission_required.value < Permissions.ANON.value:
+                    return False, b'Not enough permissions'
+
+            elif not user.check_password(message.password):
+                return False, b'Wrong user and/or password'
+
+            elif user.get_permissions().value > permission_required.value:
+                return False, b'Not enough permissions'
 
         # Get the last status of the contract.
         db_contract = Contract.from_name(message.contract)
