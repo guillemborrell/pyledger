@@ -130,14 +130,12 @@ def test_register_larger_contract():
                 raise Exception('Account already exists')
 
             self.accounts[key] = 0.0
-            return self
 
         def increment(self, key: str, quantity: float):
             if key not in self.accounts:
                 raise Exception('Account not found')
 
             self.accounts[key] += quantity
-            return self
 
         def transfer(self, source: str, dest: str, quantity: float):
             if source not in self.accounts:
@@ -150,13 +148,11 @@ def test_register_larger_contract():
             self.accounts[source] -= quantity
             self.accounts[dest] += quantity
 
-            return self
-
         def balance(self, key: str):
             if key not in self.accounts:
                 print(self.accounts)
                 raise Exception('Account not found')
 
-            return self, str(self.accounts[key])
+            return str(self.accounts[key])
 
     register_contract(DigitalCurrency())

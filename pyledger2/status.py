@@ -44,13 +44,18 @@ class SimpleStatus(BaseStatus):
         return pickle.dumps(self.__dict__['attributes'])
 
     def load(self, dump: bytes):
-        self.__dict__['attributes'] = pickle.loads(dump)
+        status = pickle.loads(dump)
+        self.__dict__['attributes'] = status
 
     def to_dict(self):
         return self.__dict__['attributes']
 
     def __contains__(self, item):
         return item in self.__dict__['attributes']
+
+    def __repr__(self):
+        return 'Pyledger status with attributes {}'.format(
+            [k for k in self.__dict__['attributes']])
 
 
 BaseStatus.register(SimpleStatus)

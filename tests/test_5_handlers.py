@@ -72,4 +72,4 @@ def test_status():
     status = pickle.loads(response.data)
 
     assert response.successful == True
-    assert status == {'attributes': {'accounts': {}}}
+    assert status == {'accounts': {}}

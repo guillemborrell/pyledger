@@ -89,7 +89,7 @@ def status(contract):
         if not attribute[0].startswith('_'):
             attributes[attribute[0]] = attribute[1]
 
-    return contract._status_class(attributes=attributes)
+    return contract._status_class(**attributes)
 
 
 def register_contract(contract, description=''):

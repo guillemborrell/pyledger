@@ -1,11 +1,12 @@
 from .pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from .db import Permissions, User, DB, Session, Contract
+from .db import Permissions, User, DB, Session, Contract, Status
 from .auth import allow, permissions_registry, create_user
 from .config import LIFETIME
-from .contract import contract_registry, api
+from .contract import contract_registry, api, methods
 from uuid import uuid4
 from google.protobuf.message import DecodeError
 from typing import Tuple
+import hashlib
 import datetime
 import inspect
 import pickle
@@ -90,7 +91,6 @@ class Handler:
         contract = Contract.from_name(message.contract)
         status = contract.last_status()
         status_instance.load(status.attributes)
-        print(status_instance.to_dict())
         return True, pickle.dumps(status_instance.to_dict())
 
     def verify(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
@@ -104,11 +104,42 @@ class Handler:
         :return:
         """
         if message.contract not in contract_registry:
-            return False, 'User function {} not present'.format(
+            return False, 'Contract {} not available'.format(
                 message.contract).encode('utf-8')
 
         contract = contract_registry[message.contract]
-        return True, message.contract.encode('utf-8')
+        if message.call not in methods(contract):
+            return False, 'Method {} not found in contact'.format(
+                message.call).encode('utf-8')
+
+        # Get the last status of the contract.
+        db_contract = Contract.from_name(message.contract)
+        status_data = db_contract.last_status()
+        status = contract._status_class()
+        status.load(status_data.attributes)
+
+        method = contract.__class__.__dict__[message.call]
+        method_args = pickle.loads(message.data)
+
+        result = method(status, **method_args)
+
+        # Persist the new status
+        new_status = Status()
+        new_status.contract = db_contract
+        new_status.attributes = status.dump()
+        new_status.when = datetime.datetime.now()
+
+        # This is the status chain standard
+        m = hashlib.sha256()
+        m.update(status_data.key)
+        m.update(new_status.when.isoformat().encode('utf-8'))
+        m.update(new_status.attributes)
+
+        new_status.key = m.digest()
+        DB.session.add(new_status)
+        DB.session.commit()
+
+        return True, pickle.dumps(result)
 
 
 def handler_methods(handler):
@@ -184,7 +215,7 @@ def handle_request(payload: bytes):
             successful, result = getattr(handler, message.request)(message)
         except Exception as exc:
             successful = False
-            result = 'Exception in user function: {}'.format(exc).encode('utf-8')
+            result = b'Exception in user function: ' + repr(exc).encode('utf-8')
 
         response.successful = successful
         response.data = result
