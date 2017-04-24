@@ -121,6 +121,11 @@ class Handler:
         method = contract.__class__.__dict__[message.call]
         method_args = pickle.loads(message.data)
 
+        # Load additional attributes
+        status.user = message.user
+        status.session = message.session_key
+
+        # Call the method
         result = method(status, **method_args)
 
         # Persist the new status

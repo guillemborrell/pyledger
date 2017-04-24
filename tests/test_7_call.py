@@ -31,6 +31,7 @@ def test_simple_call():
     byte_request = request.SerializeToString()
     byte_response = handle_request(byte_request)
     response.ParseFromString(byte_response)
+    print(response.data)
 
     response_data = pickle.loads(response.data)
 
