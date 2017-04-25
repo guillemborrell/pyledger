@@ -5,7 +5,7 @@ from pyledger2.handlers import handle_request
 import pickle
 
 
-def test_0_register_larger_contract():
+def test_0_register_auth_contract():
     class AuthDigitalCurrency(SimpleContract):
         accounts = {}
 
