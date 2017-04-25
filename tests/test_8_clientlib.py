@@ -45,3 +45,16 @@ def test_clientlib_call_contracts():
 
     assert successful == True
     assert set(response) == {'MyContract', 'DigitalCurrency', 'AuthDigitalCurrency'}
+
+
+def test_clientlib_call_api():
+    request = api_request(contract='AuthDigitalCurrency')
+    successful, response = handle_response(handle_request(request))
+
+    assert successful == True
+    assert response == {
+        'add_account': {'key': str},
+        'balance': {'key': str},
+        'increment': {'key': str, 'quantity': float},
+        'transfer': {'dest': str, 'quantity': float, 'source': str}
+    }

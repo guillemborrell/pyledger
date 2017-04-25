@@ -53,6 +53,16 @@ def contracts_request(**kwargs):
     return request.SerializeToString()
 
 
+def api_request(**kwargs):
+    request = PyledgerRequest()
+    request.request = 'api'
+
+    if 'contract' not in kwargs:
+        raise ValueError('Contract should be a keyword argument')
+    request.contract = kwargs['contract']
+    return request.SerializeToString()
+
+
 def handle_response(bin_response, callback=None):
     response = PyledgerResponse()
     response.ParseFromString(bin_response)
