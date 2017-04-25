@@ -46,17 +46,25 @@ def call_request(**kwargs):
     return request.SerializeToString()
 
 
-def call_response(bin_response, callback=None):
+def contracts_request(**kwargs):
+    # This is simple, doesn't require authentication.
+    request = PyledgerRequest()
+    request.request = 'contracts'
+    return request.SerializeToString()
+
+
+def handle_response(bin_response, callback=None):
     response = PyledgerResponse()
     response.ParseFromString(bin_response)
 
-    print(response.data)
     if response.successful:
         if callback:
-            return True, callback(pickle.loads(response.data))
+            response_data = pickle.loads(response.data)
+            print('Executing callback...')
+            callback(response_data)
+            return True, response_data
         else:
             return True, pickle.loads(response.data)
 
     else:
         return False, response.data.decode('utf-8')
-
