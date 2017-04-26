@@ -14,8 +14,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 import pickle
+
+from pyledger2.server.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 
 
 def auth_info(kwargs):

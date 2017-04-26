@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyledger2.client.lib import *
-from pyledger2.handlers import handle_request
+from pyledger2.server.handlers import handle_request
 
 
 def test_clientlib_call_request():

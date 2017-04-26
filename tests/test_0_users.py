@@ -14,13 +14,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.db import User, DB, Permissions, Session
-from pyledger2.auth import create_master, create_user
-from pyledger2.handlers import handle_request
-from pyledger2.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from pyledger2.config import LIFETIME
 import datetime
 import pickle
+
+from pyledger2.server.auth import create_master, create_user
+from pyledger2.server.config import LIFETIME
+from pyledger2.server.db import User, DB, Permissions, Session
+from pyledger2.server.handlers import handle_request
+from pyledger2.server.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 
 DB.sync_tables()
 

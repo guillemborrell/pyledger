@@ -14,10 +14,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.contract import SimpleContract, register_contract, \
-    methods, api, signatures, status
-from pyledger2.status import BaseStatus
 from inspect import Signature, Parameter
+
+from pyledger2.server.contract import SimpleContract, register_contract, \
+    methods, api, signatures, status
+from pyledger2.server.status import BaseStatus
 
 
 def test_contract_status():

@@ -14,8 +14,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.handlers import Handler, handler_methods, handle_request
-from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
+from pyledger2.server.handlers import Handler, handler_methods, handle_request
+from pyledger2.server.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 
 
 def test_handler_methods():

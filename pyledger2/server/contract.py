@@ -14,11 +14,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .db import DB, Contract, Status
-from .status import SimpleStatus
+import abc
 import datetime
 import inspect
-import abc
+
+from pyledger2.server.db import DB, Contract, Status
+from pyledger2.server.status import SimpleStatus
 
 contract_registry = {}
 

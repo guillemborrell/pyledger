@@ -14,9 +14,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from pyledger2.handlers import handle_request
-from pyledger2.db import Session
+from pyledger2.server.db import Session
+from pyledger2.server.handlers import handle_request
+from pyledger2.server.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 
 
 def test_master_session():

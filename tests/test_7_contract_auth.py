@@ -1,8 +1,9 @@
-from pyledger2.contract import SimpleContract, register_contract
-from pyledger2.auth import method_allow, Permissions
-from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
-from pyledger2.handlers import handle_request
 import pickle
+
+from pyledger2.server.auth import method_allow, Permissions
+from pyledger2.server.contract import SimpleContract, register_contract
+from pyledger2.server.handlers import handle_request
+from pyledger2.server.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 
 
 def test_0_register_auth_contract():
