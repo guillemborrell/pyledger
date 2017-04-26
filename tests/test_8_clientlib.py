@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.clientlib import *
+from pyledger2.client.lib import *
 from pyledger2.handlers import handle_request
 
 
