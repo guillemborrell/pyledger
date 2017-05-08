@@ -16,12 +16,19 @@
 
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
+from pyledger2.server.handlers import handle_request
+from pyledger2.server.contract import register_contract, SimpleContract
+from pyledger2.server.db import DB
+from pyledger2.server.auth import Permissions, method_allow
+
 import asyncio
 
 loop = asyncio.get_event_loop()
 
 
 class Protocol(WebSocketServerProtocol):
+    contract = None
+
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
 
@@ -35,16 +42,20 @@ class Protocol(WebSocketServerProtocol):
             print("Text message received: {0}".format(payload.decode('utf8')))
 
         # echo back message verbatim
-        self.sendMessage(payload, isBinary)
-        #self.sendClose()
+        try:
+            response = handle_request(payload)
+        except:
+            response = b'ERROR'
+
+        self.sendMessage(response, True)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
 
-def run_server(protocol, address="ws://127.0.0.1:9000"):
+def run_server(address="ws://127.0.0.1:9000"):
         factory = WebSocketServerFactory(address)
-        factory.protocol = protocol
+        factory.protocol = Protocol
         server = loop.create_server(factory,
                                     '0.0.0.0',
                                     int(address.split(':')[2])
@@ -52,6 +63,7 @@ def run_server(protocol, address="ws://127.0.0.1:9000"):
         task = loop.run_until_complete(server)
 
         try:
+            print('Starting event loop...')
             loop.run_forever()
         except KeyboardInterrupt:
             pass
@@ -61,4 +73,49 @@ def run_server(protocol, address="ws://127.0.0.1:9000"):
 
 
 if __name__ == '__main__':
-    run_server(Protocol)
+    DB.sync_tables()
+
+    class AuthDigitalCurrency(SimpleContract):
+        accounts = {}
+
+        @method_allow(Permissions.ROOT)
+        def add_account(self, key: str):
+            if key in self.accounts:
+                raise Exception('Account already exists')
+
+            self.accounts[key] = 0.0
+            return key
+
+        @method_allow(Permissions.ROOT)
+        def increment(self, key: str, quantity: float):
+            if key not in self.accounts:
+                raise Exception('Account not found')
+
+            self.accounts[key] += quantity
+
+        @method_allow(Permissions.USER)
+        def transfer(self, source: str, dest: str, quantity: float):
+            if source not in self.accounts:
+                raise Exception('Source account not found')
+            if dest not in self.accounts:
+                raise Exception('Destination account not found')
+            if self.accounts[source] < quantity:
+                raise Exception('Not enough funds in source account')
+            if quantity < 0:
+                raise Exception('You cannot transfer negative currency')
+
+            self.accounts[source] -= quantity
+            self.accounts[dest] += quantity
+
+        @method_allow(Permissions.USER)
+        def balance(self, key: str):
+            if key not in self.accounts:
+                print(self.accounts)
+                raise Exception('Account not found')
+
+            return str(self.accounts[key])
+
+    register_contract(AuthDigitalCurrency())
+    print('Contract registered successfully')
+
+    run_server()

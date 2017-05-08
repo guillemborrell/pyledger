@@ -15,18 +15,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from functools import partial
-from lib import *
+from pyledger2.client.lib import *
 
 
 def disconnect(*args, protocol=None):
     protocol.sendClose(code=1000, reason='Client manual disconnection')
     return False, 'Successfully closed, you can kill this with Ctrl-C'
 
+
 def contracts(*args, protocol=None):
+    return True, contracts_request()
 
 
 instructions = {
-    'disconnect': disconnect
+    'disconnect': disconnect,
+    'contracts': contracts
 }
 
 command_help = {
@@ -66,6 +69,10 @@ Read the full documentation in http://pyledger.readthedocs.io
 def general_parser(line, protocol=None, instruction_dict=None, user_instruction_dict=None):
     message = line.decode('utf-8').replace('\r', '').replace('\n', '')
     message_words = message.split()
+
+    if not message:
+        return False, ''
+
     if 'help' in message_words[0].casefold():
         if len(message_words) == 1:
             return False, help_str
