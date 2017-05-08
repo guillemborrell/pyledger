@@ -17,6 +17,7 @@
 from autobahn.asyncio.websocket import WebSocketClientProtocol, \
     WebSocketClientFactory
 from asyncio.streams import StreamWriter, FlowControlMixin
+from repl import parse
 import os
 import sys
 import asyncio
@@ -40,7 +41,7 @@ async def stdio(loop=None):
     return reader, writer
 
 
-async def async_input(message):
+async def async_input(message, protocol):
     if isinstance(message, str):
         message = message.encode('utf8')
 
@@ -52,20 +53,29 @@ async def async_input(message):
     await writer.drain()
 
     line = await reader.readline()
-    return line.decode('utf8').replace('\r', '').replace('\n', '')
+    # This is where everything happens in the client side
+    return parse(line, protocol=protocol)
 
     
 class MyClientProtocol(WebSocketClientProtocol):
     def onConnect(self, response):
-        print("Server connected: {0}".format(response.peer))
+        print("Connected to server: {0}".format(response.peer))
 
     async def onOpen(self):
-        print("WebSocket connection open.")
+        print("Pyledger REPL client, write 'help' for help or 'help command' for help "
+              "on a specific command")
 
-        # start sending messages every second ..
         while True:
-            message = await async_input('Message >>> ')
-            self.sendMessage(message.encode('utf-8'))
+            success, message = await async_input('PL >>> ', self)
+            if success:
+                print(message)
+                self.sendMessage(message.encode('utf-8'))
+            else:
+                print(message)
+
+            if message == 'Successfully closed, you can kill this with Ctrl-C':
+                break
+
             await asyncio.sleep(0.1)
 
     def onMessage(self, payload, isBinary):
@@ -75,15 +85,19 @@ class MyClientProtocol(WebSocketClientProtocol):
             print("Text message received: {0}".format(payload.decode('utf8')))
 
     def onClose(self, wasClean, code, reason):
-        print("WebSocket connection closed: {0}".format(reason))
+        print("WebSocket connection closed: {0}".format(code))
 
 
 if __name__ == '__main__':
-    factory = WebSocketClientFactory(u"ws://127.0.0.1:9000")
+    factory = WebSocketClientFactory('ws://127.0.0.1:9000')
     factory.protocol = MyClientProtocol
 
     loop = asyncio.get_event_loop()
     coro = loop.create_connection(factory, '127.0.0.1', 9000)
     loop.run_until_complete(coro)
-    loop.run_forever()
-    loop.close()
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        loop.shutdown_asyncgens()
+        loop.close()
+        print('Bye')
