@@ -19,6 +19,7 @@ from autobahn.asyncio.websocket import WebSocketClientProtocol, \
 from asyncio.streams import StreamWriter, FlowControlMixin
 from pyledger2.client.repl import parse
 from pyledger2.server.pyledger_message_pb2 import PyledgerResponse
+from pyledger2.client.lib import handle_response
 import pickle
 import os
 import sys
@@ -71,6 +72,8 @@ class MyClientProtocol(WebSocketClientProtocol):
             success, message = await async_input('PL >>> ', self)
             if success:
                 self.sendMessage(message)
+            else:
+                print(message)
 
             if message == 'Successfully closed, you can kill this with Ctrl-C':
                 break
@@ -79,12 +82,8 @@ class MyClientProtocol(WebSocketClientProtocol):
 
     def onMessage(self, payload, isBinary):
         if isBinary:
-            response = PyledgerResponse()
-            response.ParseFromString(payload)
-            if response.successful:
-                print(pickle.loads(response.data))
-            else:
-                print(response.data)
+            success, response = handle_response(payload)
+            print(response)
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
 
