@@ -18,9 +18,7 @@ from autobahn.asyncio.websocket import WebSocketClientProtocol, \
     WebSocketClientFactory
 from asyncio.streams import StreamWriter, FlowControlMixin
 from pyledger2.client.repl import parse
-from pyledger2.server.pyledger_message_pb2 import PyledgerResponse
 from pyledger2.client.lib import handle_response
-import pickle
 import os
 import sys
 import asyncio
