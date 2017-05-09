@@ -16,8 +16,8 @@
 
 import pickle
 
+from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 from pyledger2.server.handlers import handle_request
-from pyledger2.server.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
 
 
 def test_simple_call():

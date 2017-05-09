@@ -63,8 +63,8 @@ class MyClientProtocol(WebSocketClientProtocol):
         print("Connected to server: {0}".format(response.peer))
 
     async def onOpen(self):
-        print("Pyledger REPL client, write 'help' for help or 'help command' for help "
-              "on a specific command")
+        print("Pyledger REPL client, write 'help' for help or 'help command' "
+              "for help on a specific command")
 
         while True:
             success, message = await async_input('PL >>> ', self)

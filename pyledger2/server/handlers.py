@@ -7,11 +7,11 @@ from uuid import uuid4
 
 from google.protobuf.message import DecodeError
 
+from pyledger2.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 from pyledger2.server.auth import allow, permissions_registry, create_user, method_permissions_registry
 from pyledger2.server.config import LIFETIME
 from pyledger2.server.contract import contract_registry, api, methods
 from pyledger2.server.db import Permissions, User, DB, Session, Contract, Status
-from pyledger2.server.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
 
 
 class Handler:
