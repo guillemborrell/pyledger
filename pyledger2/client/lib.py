@@ -85,6 +85,14 @@ def api_request(**kwargs):
     return request.SerializeToString()
 
 
+def broadcast_request(message):
+    request = PyledgerRequest()
+    request.request = 'broadcast'
+    request.data = pickle.dumps(message)
+
+    return request.SerializeToString()
+
+
 def handle_response(bin_response, callback=None):
     response = PyledgerResponse()
     response.ParseFromString(bin_response)

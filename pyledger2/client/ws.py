@@ -23,6 +23,7 @@ from uuid import uuid4
 import os
 import sys
 import asyncio
+from pprint import pprint
 
 
 reader, writer = None, None
@@ -74,8 +75,12 @@ class MyClientProtocol(WebSocketClientProtocol):
             success, message = await async_input('PL >>> ', self)
             if success:
                 # Create topic for subscription.
-                topic = str(uuid4()).encode()
-                self.topics.append(topic)
+                if message.startswith(36*b'0'):
+                    topic = message[:36]
+                    message = message[36:]
+                else:
+                    topic = str(uuid4()).encode()
+                    self.topics.append(topic)
                 self.sendMessage(topic + message, isBinary=True)
             else:
                 print(message)
@@ -91,11 +96,12 @@ class MyClientProtocol(WebSocketClientProtocol):
 
         # 36 zero-bytes means broadcast
         if topic in self.topics or topic == 36*b'0':
-            self.topics.remove(topic)
+            if topic != 36*b'0':
+                self.topics.remove(topic)
             success, response = handle_response(payload)
-            print(response)
+            pprint(response)
         else:
-            print(topic)
+            pprint(topic)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {}; {}".format(code, reason))

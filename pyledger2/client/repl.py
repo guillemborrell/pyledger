@@ -39,6 +39,13 @@ def api(*args, protocol=None):
         return False, str(e)
 
 
+def broadcast(*args, protocol=None):
+    if args:
+        return True, 36*b'0' + broadcast_request(args[0].encode())
+    else:
+        return False, 'No message to bcast provided'
+
+
 def call(*args, protocol=None):
     if not args:
         return False, 'No arguments'
@@ -54,8 +61,6 @@ def call(*args, protocol=None):
     else:
         contract, method, *data = args
 
-    # Get the api to enforce the types and so on.
-    protocol.s
 
     try:
         print('Calling request')
@@ -69,7 +74,8 @@ instructions = {
     'disconnect': disconnect,
     'contracts': contracts,
     'api': api,
-    'call': call
+    'call': call,
+    'broadcast': broadcast
 }
 
 command_help = {
@@ -84,6 +90,9 @@ This is the help of api
     """,
     'call': """
 This is the help of call
+    """,
+    'broadcast': """
+this is the help of broadcast
     """
 }
 
@@ -96,6 +105,7 @@ The list of available commands is the following
  contracts     Lists the available contracts in the server
  api           Shows the api for a particular contract
  call          Calls a method of a contract
+ broadcast     Broadcast message all clients
 
 This client may have some limitations respect to a custom client.
 For instance, the server may push notifications to the clients,
@@ -119,7 +129,8 @@ def general_parser(line, protocol=None, instruction_dict=None,
             return False, help_str
         else:
             if message_words[1].casefold() in command_help:
-                return  False, command_help[message_words[1].casefold()]
+                return False, command_help[message_words[1].casefold()]
+
     if message_words[0] not in instruction_dict:
         return False, 'Command could not be parsed'
     else:

@@ -162,6 +162,10 @@ class Handler:
 
         return True, pickle.dumps(result)
 
+    def broadcast(self, message: PyledgerRequest) -> Tuple[bool, bytes]:
+        print('BROADCAST', pickle.loads(message.data))
+        return True, message.data
+
 
 def handler_methods(handler):
     """
@@ -185,17 +189,19 @@ def handle_request(payload: bytes):
     handler = Handler()
     message = PyledgerRequest()
     response = PyledgerResponse()
+    print('payload:', payload)
 
     try:
         message.ParseFromString(payload)
     except DecodeError:
+        print('>', payload)
         response.successful = False
         response.data = b'Message not properly formatted'
         return response.SerializeToString()
 
     if message.request not in handler_methods(handler):
         response.successful = False
-        response.data = b'Request type not available'
+        response.data = b'Request type {} not available'.format(message.request)
         return response.SerializeToString()
 
     else:
@@ -233,6 +239,7 @@ def handle_request(payload: bytes):
 
         # Select the function from the handler
         try:
+            print('Handling message', message)
             successful, result = getattr(handler, message.request)(message)
         except Exception as exc:
             successful = False

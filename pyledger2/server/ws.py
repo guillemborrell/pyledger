@@ -31,6 +31,7 @@ class Protocol(WebSocketServerProtocol):
     bcast_topic = 36*b'0'
 
     def onConnect(self, request):
+        self.factory.register(self)
         print("Client connecting: {0}".format(request.peer))
 
     def onOpen(self):
@@ -44,14 +45,47 @@ class Protocol(WebSocketServerProtocol):
         except:
             response = b'ERROR'
 
-        self.sendMessage(topic + response, True)
+        if topic == 36*b'0':
+            self.factory.broadcast(topic + response)
+        else:
+            self.sendMessage(topic + response, True)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
+    def _connectionLost(self, reason):
+        WebSocketServerProtocol._connectionLost(self, reason)
+        self.factory.unregister(self)
+
+
+class BroadcastServerFactory(WebSocketServerFactory):
+    """
+    Simple broadcast server broadcasting any message it receives to all
+    currently connected clients.
+    """
+    def __init__(self, url):
+        WebSocketServerFactory.__init__(self, url)
+        self.clients = []
+
+    def register(self, client):
+        if client not in self.clients:
+            print("registered client {}".format(client.peer))
+            self.clients.append(client)
+
+    def unregister(self, client):
+        if client in self.clients:
+            print("unregistered client {}".format(client.peer))
+            self.clients.remove(client)
+
+    def broadcast(self, msg):
+        print("broadcasting message '{}' ..".format(msg))
+        for c in self.clients:
+            c.sendMessage(msg, True)
+            print("message sent to {}".format(c.peer))
+
 
 def run_server(address="ws://127.0.0.1:9000"):
-        factory = WebSocketServerFactory(address)
+        factory = BroadcastServerFactory(address)
         factory.protocol = Protocol
         server = loop.create_server(factory,
                                     '0.0.0.0',
