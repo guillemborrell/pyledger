@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     # Base contract for testing
 
-    class AuthDigitalCurrency(SimpleContract):
+    class DigitalCurrency(SimpleContract):
         accounts = {}
 
         def add_account(self, key: str):
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
             return str(self.accounts[key])
 
-    register_contract(AuthDigitalCurrency())
+    register_contract(DigitalCurrency())
     print('Contract registered successfully')
 
     run_server()
