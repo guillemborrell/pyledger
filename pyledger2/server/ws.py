@@ -28,6 +28,7 @@ loop = asyncio.get_event_loop()
 
 class Protocol(WebSocketServerProtocol):
     contract = None
+    bcast_topic = 36*b'0'
 
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))

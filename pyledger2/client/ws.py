@@ -89,7 +89,8 @@ class MyClientProtocol(WebSocketClientProtocol):
         topic = payload[:36]
         payload = payload[36:]
 
-        if topic in self.topics:
+        # 36 zero-bytes means broadcast
+        if topic in self.topics or topic == 36*b'0':
             self.topics.remove(topic)
             success, response = handle_response(payload)
             print(response)
