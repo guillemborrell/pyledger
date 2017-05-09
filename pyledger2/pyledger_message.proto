@@ -8,7 +8,7 @@ message PyledgerRequest {
     string session_key = 5;
     string user = 6;
     string password = 7;
-    string index = 8;
+    string topic = 8;
     bytes data = 9;
 }
 

@@ -19,6 +19,7 @@ from autobahn.asyncio.websocket import WebSocketClientProtocol, \
 from asyncio.streams import StreamWriter, FlowControlMixin
 from pyledger2.client.repl import parse
 from pyledger2.client.lib import handle_response
+from uuid import uuid4
 import os
 import sys
 import asyncio
@@ -60,6 +61,8 @@ async def async_input(message, protocol):
 
     
 class MyClientProtocol(WebSocketClientProtocol):
+    topics = []
+
     def onConnect(self, response):
         print("Connected to server: {0}".format(response.peer))
 
@@ -70,7 +73,10 @@ class MyClientProtocol(WebSocketClientProtocol):
         while True:
             success, message = await async_input('PL >>> ', self)
             if success:
-                self.sendMessage(message)
+                # Create topic for subscription.
+                topic = str(uuid4()).encode()
+                self.topics.append(topic)
+                self.sendMessage(topic + message, isBinary=True)
             else:
                 print(message)
 
@@ -80,14 +86,18 @@ class MyClientProtocol(WebSocketClientProtocol):
             await asyncio.sleep(0.1)
 
     def onMessage(self, payload, isBinary):
-        if isBinary:
+        topic = payload[:36]
+        payload = payload[36:]
+
+        if topic in self.topics:
+            self.topics.remove(topic)
             success, response = handle_response(payload)
             print(response)
         else:
-            print("Text message received: {0}".format(payload.decode('utf8')))
+            print(topic)
 
     def onClose(self, wasClean, code, reason):
-        print("WebSocket connection closed: {0}".format(code))
+        print("WebSocket connection closed: {}; {}".format(code, reason))
 
 
 if __name__ == '__main__':

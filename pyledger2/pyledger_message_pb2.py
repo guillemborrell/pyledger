@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='pyledger_message.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x16pyledger_message.proto\"\xa8\x01\n\x0fPyledgerRequest\x12\x0f\n\x07request\x18\x01 \x01(\t\x12\x0c\n\x04\x63\x61ll\x18\x02 \x01(\t\x12\x10\n\x08\x63ontract\x18\x03 \x01(\t\x12\x12\n\nclient_key\x18\x04 \x01(\t\x12\x13\n\x0bsession_key\x18\x05 \x01(\t\x12\x0c\n\x04user\x18\x06 \x01(\t\x12\x10\n\x08password\x18\x07 \x01(\t\x12\r\n\x05index\x18\x08 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\t \x01(\x0c\"\xa1\x01\n\x10PyledgerResponse\x12\x10\n\x08response\x18\x01 \x01(\t\x12\x10\n\x08\x63ontract\x18\x02 \x01(\t\x12\x12\n\nsuccessful\x18\x03 \x01(\x08\x12\r\n\x05topic\x18\x04 \x01(\t\x12\x10\n\x08\x61uth_key\x18\x05 \x01(\t\x12\x13\n\x0bsession_key\x18\x06 \x01(\t\x12\x11\n\ttimestamp\x18\x07 \x01(\x02\x12\x0c\n\x04\x64\x61ta\x18\x08 \x01(\x0c\x62\x06proto3')
+  serialized_pb=_b('\n\x16pyledger_message.proto\"\xa8\x01\n\x0fPyledgerRequest\x12\x0f\n\x07request\x18\x01 \x01(\t\x12\x10\n\x08\x63ontract\x18\x02 \x01(\t\x12\x0c\n\x04\x63\x61ll\x18\x03 \x01(\t\x12\x12\n\nclient_key\x18\x04 \x01(\t\x12\x13\n\x0bsession_key\x18\x05 \x01(\t\x12\x0c\n\x04user\x18\x06 \x01(\t\x12\x10\n\x08password\x18\x07 \x01(\t\x12\r\n\x05topic\x18\x08 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\t \x01(\x0c\"\xa1\x01\n\x10PyledgerResponse\x12\x10\n\x08response\x18\x01 \x01(\t\x12\x10\n\x08\x63ontract\x18\x02 \x01(\t\x12\x12\n\nsuccessful\x18\x03 \x01(\x08\x12\r\n\x05topic\x18\x04 \x01(\t\x12\x10\n\x08\x61uth_key\x18\x05 \x01(\t\x12\x13\n\x0bsession_key\x18\x06 \x01(\t\x12\x11\n\ttimestamp\x18\x07 \x01(\x02\x12\x0c\n\x04\x64\x61ta\x18\x08 \x01(\x0c\x62\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -41,14 +41,14 @@ _PYLEDGERREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='call', full_name='PyledgerRequest.call', index=1,
+      name='contract', full_name='PyledgerRequest.contract', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='contract', full_name='PyledgerRequest.contract', index=2,
+      name='call', full_name='PyledgerRequest.call', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -83,7 +83,7 @@ _PYLEDGERREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='index', full_name='PyledgerRequest.index', index=7,
+      name='topic', full_name='PyledgerRequest.topic', index=7,
       number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,

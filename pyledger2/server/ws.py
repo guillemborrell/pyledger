@@ -36,18 +36,14 @@ class Protocol(WebSocketServerProtocol):
         print("WebSocket connection open.")
 
     def onMessage(self, payload, isBinary):
-        if isBinary:
-            print("Binary message received: {0} bytes".format(len(payload)))
-        else:
-            print("Text message received: {0}".format(payload.decode('utf8')))
-
-        # echo back message verbatim
         try:
+            topic = payload[:36]
+            payload = payload[36:]
             response = handle_request(payload)
         except:
             response = b'ERROR'
 
-        self.sendMessage(response, True)
+        self.sendMessage(topic + response, True)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
@@ -80,7 +76,6 @@ if __name__ == '__main__':
     class AuthDigitalCurrency(SimpleContract):
         accounts = {}
 
-        @method_allow(Permissions.ROOT)
         def add_account(self, key: str):
             if key in self.accounts:
                 raise Exception('Account already exists')
@@ -88,14 +83,12 @@ if __name__ == '__main__':
             self.accounts[key] = 0.0
             return key
 
-        @method_allow(Permissions.ROOT)
         def increment(self, key: str, quantity: float):
             if key not in self.accounts:
                 raise Exception('Account not found')
 
             self.accounts[key] += quantity
 
-        @method_allow(Permissions.USER)
         def transfer(self, source: str, dest: str, quantity: float):
             if source not in self.accounts:
                 raise Exception('Source account not found')
@@ -109,7 +102,6 @@ if __name__ == '__main__':
             self.accounts[source] -= quantity
             self.accounts[dest] += quantity
 
-        @method_allow(Permissions.USER)
         def balance(self, key: str):
             if key not in self.accounts:
                 print(self.accounts)

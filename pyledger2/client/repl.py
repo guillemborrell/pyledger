@@ -28,6 +28,9 @@ def contracts(*args, protocol=None):
 
 
 def api(*args, protocol=None):
+    if not args:
+        return False, 'No contract'
+
     contract, *_ = args
     try:
         request = api_request(contract=contract)
@@ -36,10 +39,37 @@ def api(*args, protocol=None):
         return False, str(e)
 
 
+def call(*args, protocol=None):
+    if not args:
+        return False, 'No arguments'
+
+    elif len(args) == 1:
+        return False, 'Wrong number of arguments'
+
+    elif len(args) == 2:
+        contract, method = args
+        data = {}
+        # Check if method can have no argument
+
+    else:
+        contract, method, *data = args
+
+    # Get the api to enforce the types and so on.
+    protocol.s
+
+    try:
+        print('Calling request')
+        request = call_request(contract=contract, call=method, data=data)
+        return True, request
+    except ValueError as e:
+        return False, str(e)
+
+
 instructions = {
     'disconnect': disconnect,
     'contracts': contracts,
-    'api': api
+    'api': api,
+    'call': call
 }
 
 command_help = {
