@@ -75,6 +75,8 @@ def run_server(address="ws://127.0.0.1:9000"):
 if __name__ == '__main__':
     DB.sync_tables()
 
+    # Base contract for testing
+
     class AuthDigitalCurrency(SimpleContract):
         accounts = {}
 

@@ -27,9 +27,19 @@ def contracts(*args, protocol=None):
     return True, contracts_request()
 
 
+def api(*args, protocol=None):
+    contract, *_ = args
+    try:
+        request = api_request(contract=contract)
+        return True, request
+    except ValueError as e:
+        return False, str(e)
+
+
 instructions = {
     'disconnect': disconnect,
-    'contracts': contracts
+    'contracts': contracts,
+    'api': api
 }
 
 command_help = {
@@ -66,7 +76,8 @@ Read the full documentation in http://pyledger.readthedocs.io
 """
 
 
-def general_parser(line, protocol=None, instruction_dict=None, user_instruction_dict=None):
+def general_parser(line, protocol=None, instruction_dict=None,
+                   user_instruction_dict=None):
     message = line.decode('utf-8').replace('\r', '').replace('\n', '')
     message_words = message.split()
 
@@ -82,7 +93,8 @@ def general_parser(line, protocol=None, instruction_dict=None, user_instruction_
     if message_words[0] not in instruction_dict:
         return False, 'Command could not be parsed'
     else:
-        successful, message = instruction_dict[message_words[0]](message_words[1:], protocol=protocol)
+        successful, message = instruction_dict[message_words[0]](
+            *message_words[1:], protocol=protocol)
 
     return successful, message
 

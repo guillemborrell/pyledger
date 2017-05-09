@@ -34,7 +34,8 @@ async def stdio(loop=None):
     reader = asyncio.StreamReader()
     reader_protocol = asyncio.StreamReaderProtocol(reader)
 
-    writer_transport, writer_protocol = await loop.connect_write_pipe(FlowControlMixin, os.fdopen(0, 'wb'))
+    writer_transport, writer_protocol = await loop.connect_write_pipe(
+        FlowControlMixin, os.fdopen(0, 'wb'))
     writer = StreamWriter(writer_transport, writer_protocol, None, loop)
 
     await loop.connect_read_pipe(lambda: reader_protocol, sys.stdin)

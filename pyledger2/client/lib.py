@@ -76,7 +76,12 @@ def api_request(**kwargs):
 
     if 'contract' not in kwargs:
         raise ValueError('Contract should be a keyword argument')
-    request.contract = kwargs['contract']
+
+    if kwargs['contract']:
+        request.contract = kwargs['contract']
+    else:
+        raise ValueError('You should give a contract name')
+
     return request.SerializeToString()
 
 
