@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from functools import partial
-from pyledger2.client.lib import *
+from pyledger.client.lib import *
 
 
 def disconnect(*args, protocol=None):

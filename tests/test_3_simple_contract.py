@@ -16,9 +16,9 @@
 
 from inspect import Signature, Parameter
 
-from pyledger2.server.contract import SimpleContract, register_contract, \
+from pyledger.server.contract import SimpleContract, register_contract, \
     methods, api, signatures, status
-from pyledger2.server.status import BaseStatus
+from pyledger.server.status import BaseStatus
 
 
 def test_contract_status():

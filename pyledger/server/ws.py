@@ -16,10 +16,10 @@
 
 from autobahn.asyncio.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
-from pyledger2.server.handlers import handle_request
-from pyledger2.server.contract import register_contract, SimpleContract
-from pyledger2.server.db import DB
-from pyledger2.server.auth import Permissions, method_allow
+from pyledger.server.handlers import handle_request
+from pyledger.server.contract import register_contract, SimpleContract
+from pyledger.server.db import DB
+from pyledger.server.auth import Permissions, method_allow
 
 import asyncio
 

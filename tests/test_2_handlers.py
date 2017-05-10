@@ -14,15 +14,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger2.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
-from pyledger2.server.handlers import Handler, handler_methods, handle_request
+from pyledger.pyledger_message_pb2 import PyledgerResponse, PyledgerRequest
+from pyledger.server.handlers import Handler, handler_methods, handle_request
 
 
 def test_handler_methods():
     assert set(handler_methods(Handler())) == {
         'api', 'session', 'echo',
         'contracts', 'verify', 'call', 'status',
-        'new_user', 'set_password'
+        'new_user', 'set_password', 'broadcast'
     }
 
 
@@ -44,7 +44,7 @@ def test_wrong_request():
     )
 
     assert response.successful == False
-    assert response.data == b'Request type not available'
+    assert response.data == b'Request type blahblah not available'
 
 
 def test_call_method():

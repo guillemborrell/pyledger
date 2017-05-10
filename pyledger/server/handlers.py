@@ -7,11 +7,11 @@ from uuid import uuid4
 
 from google.protobuf.message import DecodeError
 
-from pyledger2.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from pyledger2.server.auth import allow, permissions_registry, create_user, method_permissions_registry
-from pyledger2.server.config import LIFETIME
-from pyledger2.server.contract import contract_registry, api, methods
-from pyledger2.server.db import Permissions, User, DB, Session, Contract, Status
+from pyledger.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
+from pyledger.server.auth import allow, permissions_registry, create_user, method_permissions_registry
+from pyledger.server.config import LIFETIME
+from pyledger.server.contract import contract_registry, api, methods
+from pyledger.server.db import Permissions, User, DB, Session, Contract, Status
 
 
 class Handler:
@@ -141,7 +141,6 @@ class Handler:
         method_api = api(contract_registry[message.contract])
         signature = method_api[message.call]
 
-        print(method_args, signature)
         for arg in method_args:
             try:
                 method_args[arg] = signature[arg](method_args[arg])
@@ -201,19 +200,17 @@ def handle_request(payload: bytes):
     handler = Handler()
     message = PyledgerRequest()
     response = PyledgerResponse()
-    print('payload:', payload)
 
     try:
         message.ParseFromString(payload)
     except DecodeError:
-        print('>', payload)
         response.successful = False
         response.data = b'Message not properly formatted'
         return response.SerializeToString()
 
     if message.request not in handler_methods(handler):
         response.successful = False
-        response.data = b'Request type {} not available'.format(message.request)
+        response.data = 'Request type {} not available'.format(message.request).encode()
         return response.SerializeToString()
 
     else:

@@ -3,8 +3,8 @@ import datetime
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from pyledger2.server.config import password_backend, SECRET
-from pyledger2.server.db import User, DB, Permissions
+from pyledger.server.config import password_backend, SECRET
+from pyledger.server.db import User, DB, Permissions
 
 permissions_registry = {}
 method_permissions_registry = {}

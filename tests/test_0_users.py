@@ -17,11 +17,11 @@
 import datetime
 import pickle
 
-from pyledger2.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
-from pyledger2.server.auth import create_master, create_user
-from pyledger2.server.config import LIFETIME
-from pyledger2.server.db import User, DB, Permissions, Session
-from pyledger2.server.handlers import handle_request
+from pyledger.pyledger_message_pb2 import PyledgerRequest, PyledgerResponse
+from pyledger.server.auth import create_master, create_user
+from pyledger.server.config import LIFETIME
+from pyledger.server.db import User, DB, Permissions, Session
+from pyledger.server.handlers import handle_request
 
 DB.sync_tables()
 

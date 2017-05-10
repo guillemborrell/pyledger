@@ -18,8 +18,8 @@ import abc
 import datetime
 import inspect
 
-from pyledger2.server.db import DB, Contract, Status
-from pyledger2.server.status import SimpleStatus
+from pyledger.server.db import DB, Contract, Status
+from pyledger.server.status import SimpleStatus
 
 contract_registry = {}
 

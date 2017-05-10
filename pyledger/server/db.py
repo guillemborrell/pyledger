@@ -27,8 +27,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from pyledger2.server.config import args
-from pyledger2.server.config import password_backend, SECRET
+from pyledger.server.config import args
+from pyledger.server.config import password_backend, SECRET
 
 
 class Handler:

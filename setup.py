@@ -40,7 +40,7 @@ setup(name='pyledger',
       long_description=long_description,
       author='Guillem Borrell',
       author_email='guillemborrell@gmail.com',
-      packages=['pyledger', 'pyledger2'],
+      packages=['pyledger', 'pyledger'],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
