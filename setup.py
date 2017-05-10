@@ -52,11 +52,10 @@ setup(name='pyledger',
           'License :: OSI Approved :: GNU Affero General Public License v3'
       ],
       setup_requires=['pytest-runner', 'pytest'],
-      install_requires=['protobuf>=3.0.0', 'tornado', 'dill', 'sqlalchemy',
+      install_requires=['protobuf>=3.0.0', 'sqlalchemy',
                         'autobahn', 'google', 'cryptography'],
       entry_points={
-          'console_scripts': ['pyledger-server=pyledger.server:main',
-                              'pyledger-shell=pyledger.clients:run_repl',
+          'console_scripts': ['pyledger-shell=pyledger.client:run',
                               'pyledger-verify=pyledger.verify:run']
           }
       )
