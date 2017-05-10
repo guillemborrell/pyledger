@@ -26,5 +26,4 @@ class Hello(SimpleContract):
         return 'Hello {}'.format(self.counter)
 
 
-if __name__ == '__main__':
-    run(Hello)
+run(Hello)

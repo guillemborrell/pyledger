@@ -14,57 +14,45 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger.handlers import make_tornado
-from pyledger.contract import Builder
-from pyledger.config import args
-import tornado.ioloop
+from pyledger.server import run
+from pyledger.server.contract import SimpleContract
 
 
-def ledger():
-    def add_account(attrs, key: str):
-        if key in attrs.accounts:
+class DigitalCurrency(SimpleContract):
+    accounts = {}
+
+    def add_account(self, key: str):
+        if key in self.accounts:
             raise Exception('Account already exists')
 
-        attrs.accounts[key] = 0.0
-        return attrs
+        self.accounts[key] = 0.0
+        return key
 
-    def increment(attrs, key: str, quantity: float):
-        if key not in attrs.accounts:
+    def increment(self, key: str, quantity: float):
+        if key not in self.accounts:
             raise Exception('Account not found')
 
-        attrs.accounts[key] += quantity
-        return attrs
+        self.accounts[key] += quantity
 
-    def transfer(attrs, source: str, dest: str, quantity: float):
-        if source not in attrs.accounts:
+    def transfer(self, source: str, dest: str, quantity: float):
+        if source not in self.accounts:
             raise Exception('Source account not found')
-        if dest not in attrs.accounts:
+        if dest not in self.accounts:
             raise Exception('Destination account not found')
-        if attrs.accounts[source] < quantity:
+        if self.accounts[source] < quantity:
             raise Exception('Not enough funds in source account')
+        if quantity < 0:
+            raise Exception('You cannot transfer negative currency')
 
-        attrs.accounts[source] -= quantity
-        attrs.accounts[dest] += quantity
+        self.accounts[source] -= quantity
+        self.accounts[dest] += quantity
 
-        return attrs
-
-    def balance(attrs, key: str):
-        if key not in attrs.accounts:
-            print(attrs.accounts)
+    def balance(self, key: str):
+        if key not in self.accounts:
+            print(self.accounts)
             raise Exception('Account not found')
 
-        return attrs, str(attrs.accounts[key])
+        return str(self.accounts[key])
 
-    contract = Builder('DigitalCurrency')
-    contract.add_attribute('accounts', {})
-    contract.add_method(add_account)
-    contract.add_method(increment)
-    contract.add_method(transfer)
-    contract.add_method(balance)
 
-    return contract
-
-if __name__ == '__main__':
-    application = make_tornado(ledger)
-    application.listen(args.port)
-    tornado.ioloop.IOLoop.instance().start()
+run(DigitalCurrency)
