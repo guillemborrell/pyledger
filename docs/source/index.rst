@@ -24,72 +24,59 @@ transfer some amount.
 
 A smart contract is an application, so you need to code to create one. In
 Pyledger you can implement your smart contract in Python. In a few words, a
-smart contract in Pyledger is a function that uses the Builder class
+smart contract in Pyledger is a Python class
 
 .. code-block:: python
 
-    from pyledger.contract import Builder
+    from pyledger.server.contract import SimpleContract
 
-    def ledger():
-        def add_account(attrs, key: str):
-            if key in attrs.accounts:
+    class DigitalCurrency(SimpleContract):
+        accounts = {}
+
+        def add_account(self, key: str):
+            if key in self.accounts:
                 raise Exception('Account already exists')
 
-            attrs.accounts[key] = 0.0
-            return attrs
+            self.accounts[key] = 0.0
+            return key
 
-        def increment(attrs, key: str, quantity: float):
-            if key not in attrs.accounts:
+        def increment(self, key: str, quantity: float):
+            if key not in self.accounts:
                 raise Exception('Account not found')
 
-            attrs.accounts[key] += quantity
-            return attrs
+            self.accounts[key] += quantity
 
-        def transfer(attrs, source: str, dest: str, quantity: float):
-            if source not in attrs.accounts:
+        def transfer(self, source: str, dest: str, quantity: float):
+            if source not in self.accounts:
                 raise Exception('Source account not found')
-            if dest not in attrs.accounts:
+            if dest not in self.accounts:
                 raise Exception('Destination account not found')
-            if attrs.accounts[source] < quantity:
+            if self.accounts[source] < quantity:
                 raise Exception('Not enough funds in source account')
+            if quantity < 0:
+                raise Exception('You cannot transfer negative currency')
 
-            attrs.accounts[source] -= quantity
-            attrs.accounts[dest] += quantity
+            self.accounts[source] -= quantity
+            self.accounts[dest] += quantity
 
-            return attrs
-
-        def balance(attrs, key: str):
-            if key not in attrs.accounts:
-                print(attrs.accounts)
+        def balance(self, key: str):
+            if key not in self.accounts:
+                print(self.accounts)
                 raise Exception('Account not found')
 
-            return attrs, str(attrs.accounts[key])
+            return str(self.accounts[key])
 
-        contract = Builder('DigitalCurrency')
-        contract.add_attribute('accounts', {})
-        contract.add_method(add_account)
-        contract.add_method(increment)
-        contract.add_method(transfer)
-        contract.add_method(balance)
-
-        return contract
 
 There is no need to deal with the details now, but if you are familiar with
 Python you more or less understand where the thing is going. Once you have
 finished creating your smart contract, PyLedger can get it up and running in
-no time as a tornado or wsgi application.
+no time.
 
 .. code-block:: python
 
-    from pyledger.handlers import make_tornado
-    from pyledger.contract import Builder
-    from pyledger.config import args
-    import tornado.ioloop
+    from pyledger.server import run
 
-    if __name__ == '__main__':
-        application = make_tornado(ledger)
-        application.listen(args.port)
-        tornado.ioloop.IOLoop.instance().start()
+    run(DigitalCurrency)
 
 Assume that the previous script is called *ledger.py*. Running the ledger is
 as simple as running the script with some options::
@@ -100,37 +87,60 @@ Now you have your ledger up and running, you can connect to it with a REPL
 client::
 
     $> pyledger-shell
-    PyLedger simple client
-    (http://localhost:8888)> help
 
-    Documented commands (type help <topic>):
-    ========================================
-    api  call  contracts  exit  help  key  status  verify
+    Connected to server: tcp:127.0.0.1:9000
+    Pyledger REPL client, write 'help' for help or 'help command' for help on a specific command
+    PL >>> help
 
-    (http://localhost:8888)> contracts
-         DigitalCurrency
-    (http://localhost:8888)> api DigitalCurrency
-       add_account ( key [str] )
-       increment ( key [str], quantity [float] )
-       transfer ( source [str], dest [str], quantity [float] )
-       balance ( key [str] )
+    The Pyledger REPL is a console to interact with a Pyledger server.
+    The list of available commands is the following
 
-    (http://localhost:8888)> call DigitalCurrency add_account account1
-    SUCCESS
-    (http://localhost:8888)> call DigitalCurrency increment account1 10.0
-    SUCCESS
-    (http://localhost:8888)> call DigitalCurrency balance account1
-    10.0
-    (http://localhost:8888)> call DigitalCurrency add_account account2
-    SUCCESS
-    (http://localhost:8888)> call DigitalCurrency transfer account1 account2 5.0
-    SUCCESS
-    (http://localhost:8888)> call DigitalCurrency balance account1
-    5.0
-    (http://localhost:8888)> call DigitalCurrency balance account2
-    5.0
-    (http://localhost:8888)> exit
+     help          Shows this help
+     disconnect    Disconnects from the server in a clean way.
+     contracts     Lists the available contracts in the server
+     api           Shows the api for a particular contract
+     call          Calls a method of a contract
+     broadcast     Broadcast message all clients
 
+    This client may have some limitations respect to a custom client.
+    For instance, the server may push notifications to the clients,
+    and using the client API, you could define callbacks to those
+    pushed messages.
+
+    Read the full documentation in http://pyledger.readthedocs.io
+
+    PL >>> contracts
+    ['DigitalCurrency']
+    PL >>> api DigitalCurrency
+    {'add_account': {'key': <class 'str'>},
+     'balance': {'key': <class 'str'>},
+     'increment': {'key': <class 'str'>, 'quantity': <class 'float'>},
+     'transfer': {'dest': <class 'str'>,
+                  'quantity': <class 'float'>,
+                  'source': <class 'str'>}}
+    PL >>> call DigitalCurrency add_account account1
+    Call with pairs of key value arguments
+    PL >>> call DigitalCurrency add_account key account1
+    'account1'
+    PL >>> call DigitalCurrency increment key account1 quantity 100.0
+    None
+    PL >>> call DigitalCurrency balance key account1
+    '100.0'
+    PL >>> call DigitalCurrency add_account key account2
+    'account2'
+    PL >>> call DigitalCurrency transfer source account1 dest account2 quantity 50.0
+    None
+    PL >>> call DigitalCurrency balance key account1
+    '50.0'
+    PL >>> call DigitalCurrency balance key account2
+    '50.0'
+    PL >>> disconnect
+    Successfully closed, you can kill this with Ctrl-C
+    WebSocket connection closed: 1000; None
+    ^CBye
+
+
+Pyledger is possible thanks to `Autobahn <http://crossbar.io/autobahn/>`_
 
 Now that we may have your attention, the actual docs.
 
