@@ -14,25 +14,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyledger.handlers import make_tornado
-from pyledger.contract import Builder
-from pyledger.config import args
-import tornado.ioloop
+from pyledger.server import run
+from pyledger.server.contract import SimpleContract
 
 
-def hello():
-    def say_hello(attrs):
-        attrs.counter += 1
-        return attrs, 'Hello {}'.format(attrs.counter)
+class Hello(SimpleContract):
+    counter = 0
 
-    contract = Builder('Hello')
-    contract.add_attribute('counter', 0)
-    contract.add_method(say_hello)
-
-    return contract
+    def say_hello(self):
+        self.counter += 1
+        return 'Hello {}'.format(self.counter)
 
 
 if __name__ == '__main__':
-    application = make_tornado(hello)
-    application.listen(args.port)
-    tornado.ioloop.IOLoop.instance().start()
+    run(Hello)
