@@ -141,8 +141,13 @@ class Handler:
         method_api = api(contract_registry[message.contract])
         signature = method_api[message.call]
 
+        print(method_args, signature)
         for arg in method_args:
-            method_args[arg] = signature[arg](method_args[arg])
+            try:
+                method_args[arg] = signature[arg](method_args[arg])
+            except KeyError:
+                return False, str(
+                    ValueError('{} is not a valid key'.format(arg))).encode()
 
         # Load additional attributes
         status.user = message.user
