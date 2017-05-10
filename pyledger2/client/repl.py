@@ -55,16 +55,20 @@ def call(*args, protocol=None):
 
     elif len(args) == 2:
         contract, method = args
-        data = {}
+        args = {}
         # Check if method can have no argument
 
     else:
         contract, method, *data = args
+        if len(data) % 2 != 0:
+            return False, 'Call with pairs of key value arguments'
 
+        args = {}
+        for key, arg in zip(data[::2], data[1::2]):
+            args[key] = arg
 
     try:
-        print('Calling request')
-        request = call_request(contract=contract, call=method, data=data)
+        request = call_request(contract=contract, call=method, data=args)
         return True, request
     except ValueError as e:
         return False, str(e)
