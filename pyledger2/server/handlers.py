@@ -137,6 +137,13 @@ class Handler:
         method = contract.__class__.__dict__[message.call]
         method_args = pickle.loads(message.data)
 
+        # Coerce types given the API, since the arguments are pickled
+        method_api = api(contract_registry[message.contract])
+        signature = method_api[message.call]
+
+        for arg in method_args:
+            method_args[arg] = signature[arg](method_args[arg])
+
         # Load additional attributes
         status.user = message.user
         status.session = message.session_key
